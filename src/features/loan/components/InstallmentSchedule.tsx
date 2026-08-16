@@ -19,7 +19,7 @@ export function InstallmentSchedule({ installments }: { installments: LoanInstal
           <TableHeaderCell>#</TableHeaderCell>
           <TableHeaderCell>Due date</TableHeaderCell>
           <TableHeaderCell>Amount due</TableHeaderCell>
-          <TableHeaderCell>Amount paid</TableHeaderCell>
+          <TableHeaderCell>Paid date</TableHeaderCell>
           <TableHeaderCell>Status</TableHeaderCell>
         </TableRow>
       </TableHead>
@@ -29,11 +29,9 @@ export function InstallmentSchedule({ installments }: { installments: LoanInstal
             <TableCell>{installment.installmentNumber}</TableCell>
             <TableCell>{formatDate(installment.dueDate)}</TableCell>
             <TableCell>
-              <Money amount={installment.amountDue} />
+              <Money amount={installment.expectedAmount} />
             </TableCell>
-            <TableCell>
-              <Money amount={installment.amountPaid} />
-            </TableCell>
+            <TableCell>{installment.paidDate ? formatDate(installment.paidDate) : '—'}</TableCell>
             <TableCell>
               <StatusBadge status={installment.status} />
             </TableCell>

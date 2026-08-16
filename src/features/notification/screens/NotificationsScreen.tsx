@@ -1,14 +1,25 @@
-import { Card, CardContent, EmptyState, PageHeader } from '@/shared/components';
+import { Card, CardContent, EmptyState, PageHeader, StatusBadge } from '@/shared/components';
 import { Skeleton } from '@/shared/components/Skeleton';
 import { formatRelative } from '@/shared/lib/date';
 import { useNotifications } from '../hooks';
+
+function formatEventType(eventType: string): string {
+  return eventType
+    .toLowerCase()
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
 
 export function NotificationsScreen() {
   const { data: notifications, isLoading } = useNotifications();
 
   return (
     <div>
-      <PageHeader title="Notifications" description="Your notification history." />
+      <PageHeader
+        title="Notifications"
+        description="Email delivery history for your account."
+      />
 
       {isLoading && <Skeleton className="h-40 w-full" />}
       {!isLoading && (notifications?.length ?? 0) === 0 && (
@@ -17,19 +28,17 @@ export function NotificationsScreen() {
 
       <div className="space-y-2">
         {notifications?.map((notification) => (
-          <Card key={notification.id} className={notification.read ? 'opacity-70' : ''}>
-            <CardContent className="flex items-start justify-between gap-4 py-4">
+          <Card key={notification.id}>
+            <CardContent className="flex items-center justify-between gap-4 py-4">
               <div>
                 <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                  {notification.title}
+                  {formatEventType(notification.eventType)}
                 </p>
-                <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
-                  {notification.message}
+                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                  Sent via {notification.channel.toLowerCase()} {formatRelative(notification.sentAt)}
                 </p>
               </div>
-              <span className="shrink-0 text-xs text-slate-400 dark:text-slate-500">
-                {formatRelative(notification.createdAt)}
-              </span>
+              <StatusBadge status={notification.status} />
             </CardContent>
           </Card>
         ))}

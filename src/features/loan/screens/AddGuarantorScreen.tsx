@@ -52,7 +52,7 @@ export function AddGuarantorScreen() {
               <SelectContent>
                 {candidates?.map((candidate) => (
                   <SelectItem key={candidate.memberId} value={candidate.memberId}>
-                    {candidate.fullName} — credit score {candidate.creditScore}
+                    {candidate.email} — credibility score {candidate.credibilityScore}
                   </SelectItem>
                 ))}
               </SelectContent>

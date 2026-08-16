@@ -8,21 +8,21 @@ import { useLoans } from '../hooks';
 
 const columns: ColumnDef<Loan, unknown>[] = [
   {
-    accessorKey: 'memberName',
+    id: 'member',
     header: 'Member',
     cell: ({ row }) => (
       <Link
         to={`/admin/loans/${row.original.id}`}
         className="font-medium text-indigo-700 hover:underline dark:text-indigo-400"
       >
-        {row.original.memberName}
+        {row.original.memberId}
       </Link>
     ),
   },
   {
-    accessorKey: 'principal',
+    accessorKey: 'principalAmount',
     header: 'Principal',
-    cell: ({ row }) => <Money amount={row.original.principal} />,
+    cell: ({ row }) => <Money amount={row.original.principalAmount} />,
   },
   {
     accessorKey: 'outstandingBalance',
@@ -30,9 +30,9 @@ const columns: ColumnDef<Loan, unknown>[] = [
     cell: ({ row }) => <Money amount={row.original.outstandingBalance} />,
   },
   {
-    accessorKey: 'disbursedAt',
+    accessorKey: 'disbursedDate',
     header: 'Disbursed',
-    cell: ({ row }) => formatDate(row.original.disbursedAt),
+    cell: ({ row }) => formatDate(row.original.disbursedDate),
   },
   {
     accessorKey: 'status',
@@ -58,6 +58,11 @@ export function AdminLoansScreen() {
     <div>
       <PageHeader title="Loans" description="All loans, filterable by status." />
 
+      <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+        The backend doesn't expose a loans list endpoint yet — this table is backed by seed data
+        until that lands.
+      </p>
+
       <div className="mb-4 flex gap-2">
         {STATUS_FILTERS.map((filter) => (
           <button
@@ -76,7 +81,7 @@ export function AdminLoansScreen() {
 
       <DataTable
         columns={columns}
-        data={data?.content ?? []}
+        data={data ?? []}
         isLoading={isLoading}
         emptyTitle="No loans found"
         searchPlaceholder="Search loans…"

@@ -11,9 +11,10 @@ import {
   StatusBadge,
 } from '@/shared/components';
 import { Skeleton } from '@/shared/components/Skeleton';
+import type { LoanDetail } from '@/shared/types/loan';
 import { GuarantorList } from '../components/GuarantorList';
 import { InstallmentSchedule } from '../components/InstallmentSchedule';
-import { useLoanOrRequest } from '../hooks';
+import { useLoanOrRequest, useLoanRequest } from '../hooks';
 
 export function LoanDetailScreen() {
   const { id } = useParams<{ id: string }>();
@@ -28,7 +29,6 @@ export function LoanDetailScreen() {
       <div>
         <PageHeader
           title={`Loan request — ${request.purpose}`}
-          description={`Submitted ${request.termMonths}-month request`}
           action={<StatusBadge status={request.status} />}
         />
         <div className="grid gap-6 md:grid-cols-2">
@@ -37,7 +37,10 @@ export function LoanDetailScreen() {
               <CardTitle>Amount requested</CardTitle>
             </CardHeader>
             <CardContent>
-              <Money amount={request.amount} className="text-2xl font-semibold text-slate-900 dark:text-slate-100" />
+              <Money
+                amount={request.amountRequested}
+                className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
+              />
             </CardContent>
           </Card>
           <Card>
@@ -54,21 +57,21 @@ export function LoanDetailScreen() {
             </CardContent>
           </Card>
         </div>
-        {request.status === 'REJECTED' && request.rejectionReason && (
-          <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-800 dark:bg-red-950 dark:text-red-300">
-            Rejected: {request.rejectionReason}
-          </p>
-        )}
       </div>
     );
   }
 
-  const { loan } = result;
+  return <LoanDetailBody loan={result.loan} />;
+}
+
+function LoanDetailBody({ loan }: { loan: LoanDetail }) {
+  const requestResult = useLoanRequest(loan.loanRequestId);
+
   return (
     <div>
       <PageHeader
         title={`Loan — ${loan.id}`}
-        description={`Disbursed with ${loan.interestRate}% interest`}
+        description={`Disbursed with ${loan.interestRate}% interest over ${loan.durationMonths} months`}
         action={<StatusBadge status={loan.status} />}
       />
 
@@ -78,7 +81,10 @@ export function LoanDetailScreen() {
             <CardTitle>Principal</CardTitle>
           </CardHeader>
           <CardContent>
-            <Money amount={loan.principal} className="text-2xl font-semibold text-slate-900 dark:text-slate-100" />
+            <Money
+              amount={loan.principalAmount}
+              className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
+            />
           </CardContent>
         </Card>
         <Card>
@@ -91,7 +97,10 @@ export function LoanDetailScreen() {
             )}
           </CardHeader>
           <CardContent>
-            <Money amount={loan.outstandingBalance} className="text-2xl font-semibold text-slate-900 dark:text-slate-100" />
+            <Money
+              amount={loan.outstandingBalance}
+              className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
+            />
           </CardContent>
         </Card>
       </div>
@@ -108,7 +117,13 @@ export function LoanDetailScreen() {
           <CardTitle>Guarantors</CardTitle>
         </CardHeader>
         <CardContent>
-          <GuarantorList guarantors={loan.guarantors} />
+          {requestResult.data ? (
+            <GuarantorList guarantors={requestResult.data.guarantors} />
+          ) : (
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Guarantor info isn't available for this loan.
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>

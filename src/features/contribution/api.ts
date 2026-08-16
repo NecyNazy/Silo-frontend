@@ -1,17 +1,12 @@
 import { apiClient } from '@/shared/api/client';
-import type { PageResponse } from '@/shared/types/api';
 import type {
   Contribution,
   ContributionSummary,
   RecordManualContributionInput,
 } from '@/shared/types/contribution';
 
-export async function getMemberContributions(
-  memberId: string,
-): Promise<PageResponse<Contribution>> {
-  const { data } = await apiClient.get<PageResponse<Contribution>>(
-    `/contributions/member/${memberId}`,
-  );
+export async function getMemberContributions(memberId: string): Promise<Contribution[]> {
+  const { data } = await apiClient.get<Contribution[]>(`/contributions/member/${memberId}`);
   return data;
 }
 
@@ -22,20 +17,15 @@ export async function getContributionSummary(memberId: string): Promise<Contribu
   return data;
 }
 
-export async function listAllContributions(params: {
-  page?: number;
-  size?: number;
-}): Promise<PageResponse<Contribution>> {
-  const { data } = await apiClient.get<PageResponse<Contribution>>('/contributions', { params });
+/** Gap-fill: the real backend has no "all contributions" endpoint yet. */
+export async function listAllContributions(): Promise<Contribution[]> {
+  const { data } = await apiClient.get<Contribution[]>('/contributions');
   return data;
 }
 
 export async function recordManualContribution(
   input: RecordManualContributionInput,
 ): Promise<Contribution> {
-  const { data } = await apiClient.post<Contribution>('/contributions', {
-    ...input,
-    method: 'MANUAL',
-  });
+  const { data } = await apiClient.post<Contribution>('/contributions', input);
   return data;
 }

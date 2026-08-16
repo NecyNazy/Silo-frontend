@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getDashboardMetrics } from './api';
+import { getDashboardMetrics, getMemberReportSummary } from './api';
 
 const POLL_INTERVAL_MS = 15_000;
 
@@ -9,5 +9,13 @@ export function useDashboardMetrics() {
     queryFn: () => getDashboardMetrics(),
     refetchInterval: POLL_INTERVAL_MS,
     refetchOnWindowFocus: true,
+  });
+}
+
+export function useMemberReportSummary(memberId: string | undefined) {
+  return useQuery({
+    queryKey: ['reports', 'members', memberId, 'summary'],
+    queryFn: () => getMemberReportSummary(memberId as string),
+    enabled: Boolean(memberId),
   });
 }

@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useMember } from '@/features/member/hooks';
 import {
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -12,15 +11,15 @@ import {
   StatusBadge,
 } from '@/shared/components';
 import { Skeleton } from '@/shared/components/Skeleton';
+import { ApproveRequestDialog } from '../components/ApproveRequestDialog';
 import { GuarantorList } from '../components/GuarantorList';
 import { RejectRequestDialog } from '../components/RejectRequestDialog';
-import { useApproveLoanRequest, useLoanRequest } from '../hooks';
+import { useLoanRequest } from '../hooks';
 
 export function AdminLoanRequestDetailScreen() {
   const { id } = useParams<{ id: string }>();
   const { data: request, isLoading, isError, refetch } = useLoanRequest(id);
   const { data: member } = useMember(request?.memberId);
-  const approveMutation = useApproveLoanRequest(id as string);
 
   if (isLoading) return <Skeleton className="h-64 w-full" />;
   if (isError || !request) return <ErrorState onRetry={() => refetch()} />;
@@ -30,10 +29,7 @@ export function AdminLoanRequestDetailScreen() {
 
   return (
     <div>
-      <PageHeader
-        title={`${request.memberName} — ${request.purpose}`}
-        action={<StatusBadge status={request.status} />}
-      />
+      <PageHeader title={request.purpose} action={<StatusBadge status={request.status} />} />
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
@@ -42,10 +38,10 @@ export function AdminLoanRequestDetailScreen() {
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
             <p>
-              Amount: <Money amount={request.amount} className="inline" />
+              Amount: <Money amount={request.amountRequested} className="inline" />
             </p>
-            <p>Term: {request.termMonths} months</p>
             <p>Purpose: {request.purpose}</p>
+            <p>Member: {request.memberId}</p>
           </CardContent>
         </Card>
 
@@ -54,8 +50,8 @@ export function AdminLoanRequestDetailScreen() {
             <CardTitle>Risk & credibility</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-            <p>Requester credit score: {member?.creditScore ?? '—'}</p>
             <p>KYC status: {member ? <StatusBadge status={member.kycStatus} /> : '—'}</p>
+            <p>Account status: {member ? <StatusBadge status={member.status} /> : '—'}</p>
             <p>
               Accepted guarantors: {acceptedGuarantors.length} of {request.guarantors.length}{' '}
               invited
@@ -80,13 +76,16 @@ export function AdminLoanRequestDetailScreen() {
 
       {request.status === 'PENDING' && (
         <div className="mt-6 flex gap-2">
-          <Button
-            isLoading={approveMutation.isPending}
-            disabled={!canApprove}
-            onClick={() => approveMutation.mutate()}
-          >
-            Approve
-          </Button>
+          {canApprove ? (
+            <ApproveRequestDialog requestId={request.id} />
+          ) : (
+            <span
+              title="Needs at least one accepted guarantor"
+              className="inline-flex h-10 cursor-not-allowed items-center rounded-md bg-slate-200 px-4 text-sm font-medium text-slate-400 dark:bg-slate-800 dark:text-slate-600"
+            >
+              Approve
+            </span>
+          )}
           <RejectRequestDialog requestId={request.id} />
         </div>
       )}

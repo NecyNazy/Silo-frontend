@@ -21,7 +21,7 @@ import {
 } from '../schemas';
 
 export function ManualContributionForm() {
-  const { data: members } = useMembers({ size: 100 });
+  const { data: members } = useMembers();
   const mutation = useRecordManualContribution();
   const {
     register,
@@ -37,7 +37,9 @@ export function ManualContributionForm() {
     <form
       className="space-y-4"
       onSubmit={handleSubmit((values) =>
-        mutation.mutate(values, { onSuccess: () => reset({ memberId: '', amount: 0, note: '' }) }),
+        mutation.mutate(values, {
+          onSuccess: () => reset({ memberId: '', amount: 0, reference: '' }),
+        }),
       )}
     >
       <FormAlert message={mutation.isError ? getErrorMessage(mutation.error) : null} />
@@ -53,7 +55,7 @@ export function ManualContributionForm() {
                 <SelectValue placeholder="Select a member" />
               </SelectTrigger>
               <SelectContent>
-                {members?.content.map((member) => (
+                {members?.map((member) => (
                   <SelectItem key={member.id} value={member.id}>
                     {member.fullName}
                   </SelectItem>
@@ -80,8 +82,13 @@ export function ManualContributionForm() {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="note">Note (optional)</Label>
-        <Input id="note" {...register('note')} className="max-w-sm" />
+        <Label htmlFor="reference">Reference</Label>
+        <Input id="reference" className="max-w-sm" {...register('reference')} />
+        {errors.reference && (
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+            {errors.reference.message}
+          </p>
+        )}
       </div>
 
       <Button type="submit" isLoading={mutation.isPending}>

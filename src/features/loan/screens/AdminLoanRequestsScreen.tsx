@@ -7,33 +7,27 @@ import { useLoanRequests } from '../hooks';
 
 const columns: ColumnDef<LoanRequest, unknown>[] = [
   {
-    accessorKey: 'memberName',
+    id: 'member',
     header: 'Member',
     cell: ({ row }) => (
       <Link
         to={`/admin/loan-requests/${row.original.id}`}
         className="font-medium text-indigo-700 hover:underline dark:text-indigo-400"
       >
-        {row.original.memberName}
+        {row.original.memberId}
       </Link>
     ),
   },
+  { accessorKey: 'purpose', header: 'Purpose' },
   {
-    accessorKey: 'amount',
+    accessorKey: 'amountRequested',
     header: 'Amount',
-    cell: ({ row }) => <Money amount={row.original.amount} />,
-  },
-  { accessorKey: 'termMonths', header: 'Term (mo)' },
-  {
-    id: 'guarantors',
-    header: 'Guarantors',
-    cell: ({ row }) =>
-      `${row.original.guarantors.filter((g) => g.status === 'ACCEPTED').length} accepted`,
+    cell: ({ row }) => <Money amount={row.original.amountRequested} />,
   },
   {
-    accessorKey: 'createdAt',
+    accessorKey: 'submittedAt',
     header: 'Submitted',
-    cell: ({ row }) => formatDate(row.original.createdAt),
+    cell: ({ row }) => formatDate(row.original.submittedAt),
   },
   {
     accessorKey: 'status',
@@ -48,9 +42,13 @@ export function AdminLoanRequestsScreen() {
   return (
     <div>
       <PageHeader title="Loan requests" description="Pending-approval queue." />
+      <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+        The backend doesn't expose a loan-request list endpoint yet — this queue is backed by
+        seed data until that lands.
+      </p>
       <DataTable
         columns={columns}
-        data={data?.content ?? []}
+        data={data ?? []}
         isLoading={isLoading}
         emptyTitle="No pending loan requests"
         searchPlaceholder="Search requests…"

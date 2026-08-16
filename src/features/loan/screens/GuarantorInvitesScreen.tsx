@@ -15,50 +15,45 @@ export function GuarantorInvitesScreen() {
 
       {isLoading && <Skeleton className="h-40 w-full" />}
 
-      {!isLoading && (invites?.length ?? 0) === 0 && (
-        <EmptyState title="No pending invites" />
-      )}
+      {!isLoading && (invites?.length ?? 0) === 0 && <EmptyState title="No pending invites" />}
 
       <div className="space-y-3">
-        {invites
-          ?.filter((invite) => invite.status === 'INVITED')
-          .map((invite) => (
-            <Card key={invite.id}>
-              <CardContent className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="font-medium text-slate-900 dark:text-slate-100">
-                    {invite.requesterName}
-                  </p>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Requesting <Money amount={invite.requestedAmount} className="inline" /> —
-                    requester credit score {invite.requesterCreditScore}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <StatusBadge status={invite.status} />
-                  <Button
-                    size="sm"
-                    isLoading={respondMutation.isPending}
-                    onClick={() =>
-                      respondMutation.mutate({ guarantorId: invite.id, action: 'accept' })
-                    }
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    isLoading={respondMutation.isPending}
-                    onClick={() =>
-                      respondMutation.mutate({ guarantorId: invite.id, action: 'decline' })
-                    }
-                  >
-                    Decline
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        {invites?.map((invite) => (
+          <Card key={invite.id}>
+            <CardContent className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-medium text-slate-900 dark:text-slate-100">
+                  {invite.purpose}
+                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Requesting <Money amount={invite.amountRequested} className="inline" />
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <StatusBadge status={invite.borrowerRiskTier} />
+                <Button
+                  size="sm"
+                  isLoading={respondMutation.isPending}
+                  onClick={() =>
+                    respondMutation.mutate({ guarantorId: invite.id, action: 'accept' })
+                  }
+                >
+                  Accept
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  isLoading={respondMutation.isPending}
+                  onClick={() =>
+                    respondMutation.mutate({ guarantorId: invite.id, action: 'decline' })
+                  }
+                >
+                  Decline
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );

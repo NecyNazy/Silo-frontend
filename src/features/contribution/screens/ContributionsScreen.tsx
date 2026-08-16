@@ -1,15 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMyProfile } from '@/features/member/hooks';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  DataTable,
-  Money,
-  PageHeader,
-  StatusBadge,
-} from '@/shared/components';
+import { Card, CardContent, CardHeader, CardTitle, DataTable, Money, PageHeader } from '@/shared/components';
 import { formatDate } from '@/shared/lib/date';
 import type { Contribution } from '@/shared/types/contribution';
 import { ContributionCta } from '../components/ContributionCta';
@@ -17,21 +8,17 @@ import { useContributionSummary, useMemberContributions } from '../hooks';
 
 const columns: ColumnDef<Contribution, unknown>[] = [
   {
-    accessorKey: 'createdAt',
+    accessorKey: 'contributionDate',
     header: 'Date',
-    cell: ({ row }) => formatDate(row.original.createdAt),
+    cell: ({ row }) => formatDate(row.original.contributionDate),
   },
   {
     accessorKey: 'amount',
     header: 'Amount',
     cell: ({ row }) => <Money amount={row.original.amount} />,
   },
-  { accessorKey: 'method', header: 'Method' },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => <StatusBadge status={row.original.status} />,
-  },
+  { accessorKey: 'source', header: 'Source' },
+  { accessorKey: 'reference', header: 'Reference' },
 ];
 
 export function ContributionsScreen() {
@@ -50,7 +37,7 @@ export function ContributionsScreen() {
           </CardHeader>
           <CardContent>
             <Money
-              amount={summary?.totalContributed ?? 0}
+              amount={summary?.totalAmount ?? 0}
               className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
             />
           </CardContent>
@@ -74,7 +61,7 @@ export function ContributionsScreen() {
 
       <DataTable
         columns={columns}
-        data={contributions?.content ?? []}
+        data={contributions ?? []}
         isLoading={isLoading}
         emptyTitle="No contributions yet"
         searchPlaceholder="Search contributions…"

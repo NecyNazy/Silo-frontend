@@ -1,7 +1,8 @@
 import { StatusBadge } from '@/shared/components';
-import type { Guarantor } from '@/shared/types/loan';
+import { formatDate } from '@/shared/lib/date';
+import type { LoanGuarantor } from '@/shared/types/loan';
 
-export function GuarantorList({ guarantors }: { guarantors: Guarantor[] }) {
+export function GuarantorList({ guarantors }: { guarantors: LoanGuarantor[] }) {
   if (guarantors.length === 0) {
     return <p className="text-sm text-slate-500 dark:text-slate-400">No guarantors added yet.</p>;
   }
@@ -11,9 +12,9 @@ export function GuarantorList({ guarantors }: { guarantors: Guarantor[] }) {
       {guarantors.map((g) => (
         <li key={g.id} className="flex items-center justify-between py-2 text-sm">
           <div>
-            <p className="font-medium text-slate-900 dark:text-slate-100">{g.guarantorName}</p>
+            <p className="font-medium text-slate-900 dark:text-slate-100">{g.memberId}</p>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Credit score: {g.guarantorCreditScore}
+              Invited {formatDate(g.invitedAt)}
             </p>
           </div>
           <StatusBadge status={g.status} />

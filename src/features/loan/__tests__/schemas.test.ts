@@ -4,22 +4,20 @@ import { createLoanRequestSchema } from '../schemas';
 describe('createLoanRequestSchema', () => {
   it('accepts a valid loan request', () => {
     const result = createLoanRequestSchema.safeParse({
-      amount: '150000',
+      amountRequested: '150000',
       purpose: 'Shop inventory restock',
-      termMonths: '6',
     });
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data).toEqual({ amount: 150000, purpose: 'Shop inventory restock', termMonths: 6 });
+      expect(result.data).toEqual({ amountRequested: 150000, purpose: 'Shop inventory restock' });
     }
   });
 
   it('rejects a non-positive amount', () => {
     const result = createLoanRequestSchema.safeParse({
-      amount: '0',
+      amountRequested: '0',
       purpose: 'Shop inventory restock',
-      termMonths: '6',
     });
 
     expect(result.success).toBe(false);
@@ -27,9 +25,8 @@ describe('createLoanRequestSchema', () => {
 
   it('rejects a purpose that is too short', () => {
     const result = createLoanRequestSchema.safeParse({
-      amount: '150000',
+      amountRequested: '150000',
       purpose: 'hi',
-      termMonths: '6',
     });
 
     expect(result.success).toBe(false);

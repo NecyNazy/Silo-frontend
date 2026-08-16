@@ -1,27 +1,31 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Button, FormAlert, Input, Label } from '@/shared/components';
-import { getErrorMessage } from '@/shared/lib/error';
+
+import { useUpdateMemberProfile } from '../hooks';
 import type { Member } from '@/shared/types/member';
-import { useUpdateMember } from '../hooks';
-import { updateMemberSchema, type UpdateMemberFormValues } from '../schemas';
+import { getErrorMessage } from '@/shared/lib/error';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button, FormAlert, Input, Label } from '@/shared/components';
+import { updateMemberProfileSchema, type UpdateMemberProfileFormValues } from '../schemas';
 
 export function ProfileForm({ member }: { member: Member }) {
   const {
     register,
     handleSubmit,
     formState: { errors, isDirty },
-  } = useForm<UpdateMemberFormValues>({
-    resolver: zodResolver(updateMemberSchema),
-    defaultValues: { fullName: member.fullName, phone: member.phone },
+  } = useForm<UpdateMemberProfileFormValues>({
+    resolver: zodResolver(updateMemberProfileSchema),
+    defaultValues: {
+      fullName: member.fullName,
+      phoneNumber: member.phoneNumber,
+      idType: member.idType ?? '',
+      idNumber: member.idNumber ?? '',
+      idDocumentRef: member.idDocumentRef ?? '',
+    },
   });
-  const updateMutation = useUpdateMember(member.id);
+  const updateMutation = useUpdateMemberProfile(member.id);
 
   return (
-    <form
-      className="space-y-4"
-      onSubmit={handleSubmit((values) => updateMutation.mutate(values))}
-    >
+    <form className="space-y-4" onSubmit={handleSubmit((values) => updateMutation.mutate(values))}>
       <FormAlert message={updateMutation.isError ? getErrorMessage(updateMutation.error) : null} />
 
       <div className="space-y-1.5">
@@ -40,13 +44,33 @@ export function ProfileForm({ member }: { member: Member }) {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="phone">Phone</Label>
-        <Input id="phone" {...register('phone')} />
-        {errors.phone && (
+        <Label htmlFor="phoneNumber">Phone</Label>
+        <Input id="phoneNumber" {...register('phoneNumber')} />
+        {errors.phoneNumber && (
           <p role="alert" className="text-xs text-red-600 dark:text-red-400">
-            {errors.phone.message}
+            {errors.phoneNumber.message}
           </p>
         )}
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="idType">ID type</Label>
+          <Input id="idType" placeholder="e.g. National ID, Passport" {...register('idType')} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="idNumber">ID number</Label>
+          <Input id="idNumber" {...register('idNumber')} />
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="idDocumentRef">ID document reference</Label>
+        <Input
+          id="idDocumentRef"
+          placeholder="Link or reference to your ID document"
+          {...register('idDocumentRef')}
+        />
       </div>
 
       <Button type="submit" isLoading={updateMutation.isPending} disabled={!isDirty}>

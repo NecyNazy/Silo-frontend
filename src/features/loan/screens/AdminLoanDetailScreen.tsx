@@ -12,21 +12,19 @@ import {
 import { Skeleton } from '@/shared/components/Skeleton';
 import { GuarantorList } from '../components/GuarantorList';
 import { InstallmentSchedule } from '../components/InstallmentSchedule';
-import { useLoan } from '../hooks';
+import { useLoan, useLoanRequest } from '../hooks';
 
 export function AdminLoanDetailScreen() {
   const { id } = useParams<{ id: string }>();
   const { data: loan, isLoading, isError, refetch } = useLoan(id);
+  const requestResult = useLoanRequest(loan?.loanRequestId);
 
   if (isLoading) return <Skeleton className="h-64 w-full" />;
   if (isError || !loan) return <ErrorState onRetry={() => refetch()} />;
 
   return (
     <div>
-      <PageHeader
-        title={`${loan.memberName} — Loan ${loan.id}`}
-        action={<StatusBadge status={loan.status} />}
-      />
+      <PageHeader title={`Loan ${loan.id}`} action={<StatusBadge status={loan.status} />} />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
         <Card>
@@ -34,7 +32,10 @@ export function AdminLoanDetailScreen() {
             <CardTitle>Principal</CardTitle>
           </CardHeader>
           <CardContent>
-            <Money amount={loan.principal} className="text-2xl font-semibold text-slate-900 dark:text-slate-100" />
+            <Money
+              amount={loan.principalAmount}
+              className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
+            />
           </CardContent>
         </Card>
         <Card>
@@ -62,7 +63,13 @@ export function AdminLoanDetailScreen() {
           <CardTitle>Guarantors</CardTitle>
         </CardHeader>
         <CardContent>
-          <GuarantorList guarantors={loan.guarantors} />
+          {requestResult.data ? (
+            <GuarantorList guarantors={requestResult.data.guarantors} />
+          ) : (
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Guarantor info isn't available for this loan.
+            </p>
+          )}
         </CardContent>
       </Card>
 

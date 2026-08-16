@@ -1,104 +1,108 @@
 import type { Contribution } from '@/shared/types/contribution';
-import type { Guarantor, Loan, LoanRequest } from '@/shared/types/loan';
+import type { Loan, LoanRequestWithGuarantors } from '@/shared/types/loan';
 import type { Member } from '@/shared/types/member';
-import type { Notification } from '@/shared/types/notification';
+
+/**
+ * Fixture data backing the MSW "gap-fill" handlers only — the endpoints the
+ * real backend doesn't expose yet (see handlers/gaps.ts). Everything else
+ * talks to the real API, so this data is intentionally disconnected from it:
+ * a loan request submitted for real won't show up here, and vice versa.
+ */
 
 function daysAgo(days: number): string {
   return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
 }
 
-function daysFromNow(days: number): string {
-  return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
-}
-
 export const members: Member[] = [
   {
-    id: 'mem-officer-1',
-    fullName: 'Ada Officer',
-    email: 'officer@silo.dev',
-    phone: '+2348010000001',
-    role: 'OFFICER',
-    status: 'ACTIVE',
-    kycStatus: 'VERIFIED',
-    creditScore: 0,
-    createdAt: daysAgo(400),
-  },
-  {
-    id: 'mem-1',
+    id: 'seed-mem-1',
     fullName: 'Chidi Okafor',
-    email: 'member@silo.dev',
-    phone: '+2348020000002',
-    role: 'MEMBER',
-    status: 'ACTIVE',
+    email: 'seed-member@silo.dev',
+    phoneNumber: '+2348020000002',
     kycStatus: 'VERIFIED',
-    creditScore: 72,
-    idDocumentRef: 'doc_chidi_id.pdf',
-    createdAt: daysAgo(200),
+    idType: 'National ID',
+    idNumber: 'NIN-00291823',
+    idDocumentRef: null,
+    status: 'ACTIVE',
+    joinedDate: daysAgo(200),
   },
   {
-    id: 'mem-2',
+    id: 'seed-mem-2',
     fullName: 'Ngozi Bello',
-    email: 'guarantor@silo.dev',
-    phone: '+2348030000003',
-    role: 'MEMBER',
-    status: 'ACTIVE',
+    email: 'seed-guarantor@silo.dev',
+    phoneNumber: '+2348030000003',
     kycStatus: 'VERIFIED',
-    creditScore: 88,
-    idDocumentRef: 'doc_ngozi_id.pdf',
-    createdAt: daysAgo(250),
+    idType: 'National ID',
+    idNumber: 'NIN-00291824',
+    idDocumentRef: null,
+    status: 'ACTIVE',
+    joinedDate: daysAgo(250),
   },
   {
-    id: 'mem-3',
+    id: 'seed-mem-3',
     fullName: 'Femi Adeyemi',
-    email: 'femi@silo.dev',
-    phone: '+2348040000004',
-    role: 'MEMBER',
-    status: 'ACTIVE',
+    email: 'seed-femi@silo.dev',
+    phoneNumber: '+2348040000004',
     kycStatus: 'VERIFIED',
-    creditScore: 65,
-    idDocumentRef: 'doc_femi_id.pdf',
-    createdAt: daysAgo(180),
+    idType: null,
+    idNumber: null,
+    idDocumentRef: null,
+    status: 'ACTIVE',
+    joinedDate: daysAgo(180),
   },
   {
-    id: 'mem-4',
+    id: 'seed-mem-4',
     fullName: 'Bisi Lawal',
-    email: 'pending@silo.dev',
-    phone: '+2348050000005',
-    role: 'MEMBER',
-    status: 'PENDING',
+    email: 'seed-pending@silo.dev',
+    phoneNumber: '+2348050000005',
     kycStatus: 'PENDING',
-    creditScore: 0,
-    createdAt: daysAgo(2),
+    idType: null,
+    idNumber: null,
+    idDocumentRef: null,
+    status: 'ACTIVE',
+    joinedDate: daysAgo(2),
   },
 ];
 
-export const loanRequests: LoanRequest[] = [
+export const loanRequests: LoanRequestWithGuarantors[] = [
   {
-    id: 'lr-1',
-    memberId: 'mem-1',
-    memberName: 'Chidi Okafor',
-    amount: 150_000,
+    id: 'seed-lr-1',
+    memberId: 'seed-mem-1',
+    amountRequested: 150_000,
     purpose: 'Shop inventory restock',
-    termMonths: 6,
     status: 'PENDING',
-    createdAt: daysAgo(3),
+    submittedAt: daysAgo(3),
     guarantors: [
       {
-        id: 'g-1',
-        loanRequestId: 'lr-1',
-        guarantorMemberId: 'mem-2',
-        guarantorName: 'Ngozi Bello',
-        guarantorCreditScore: 88,
+        id: 'seed-g-1',
+        loanRequestId: 'seed-lr-1',
+        memberId: 'seed-mem-2',
         status: 'ACCEPTED',
-        respondedAt: daysAgo(2),
+        invitedAt: daysAgo(2),
       },
       {
-        id: 'g-2',
-        loanRequestId: 'lr-1',
-        guarantorMemberId: 'mem-3',
-        guarantorName: 'Femi Adeyemi',
-        guarantorCreditScore: 65,
-        status: 'INVITED',
+        id: 'seed-g-2',
+        loanRequestId: 'seed-lr-1',
+        memberId: 'seed-mem-3',
+        status: 'PENDING',
+        invitedAt: daysAgo(2),
+      },
+    ],
+  },
+  {
+    id: 'seed-lr-0',
+    memberId: 'seed-mem-1',
+    amountRequested: 100_000,
+    purpose: 'Prior approved request backing the seed loan',
+    status: 'APPROVED',
+    submittedAt: daysAgo(95),
+    guarantors: [
+      {
+        id: 'seed-g-0',
+        loanRequestId: 'seed-lr-0',
+        memberId: 'seed-mem-2',
+        status: 'ACCEPTED',
+        invitedAt: daysAgo(95),
       },
     ],
   },
@@ -106,138 +110,44 @@ export const loanRequests: LoanRequest[] = [
 
 export const loans: Loan[] = [
   {
-    id: 'loan-1',
-    loanRequestId: 'lr-0',
-    memberId: 'mem-1',
-    memberName: 'Chidi Okafor',
-    principal: 100_000,
+    id: 'seed-loan-1',
+    loanRequestId: 'seed-lr-0',
+    memberId: 'seed-mem-1',
+    principalAmount: 100_000,
     interestRate: 8,
-    outstandingBalance: 51_000,
+    durationMonths: 4,
+    disbursedDate: daysAgo(90),
     status: 'ACTIVE',
-    disbursedAt: daysAgo(90),
-    guarantors: [
-      {
-        id: 'g-0',
-        loanRequestId: 'lr-0',
-        guarantorMemberId: 'mem-2',
-        guarantorName: 'Ngozi Bello',
-        guarantorCreditScore: 88,
-        status: 'ACCEPTED',
-        respondedAt: daysAgo(95),
-      },
-    ],
-    installments: [
-      {
-        id: 'inst-1',
-        loanId: 'loan-1',
-        installmentNumber: 1,
-        dueDate: daysAgo(60),
-        amountDue: 25_500,
-        amountPaid: 25_500,
-        status: 'PAID',
-      },
-      {
-        id: 'inst-2',
-        loanId: 'loan-1',
-        installmentNumber: 2,
-        dueDate: daysAgo(30),
-        amountDue: 25_500,
-        amountPaid: 25_500,
-        status: 'PAID',
-      },
-      {
-        id: 'inst-3',
-        loanId: 'loan-1',
-        installmentNumber: 3,
-        dueDate: daysFromNow(1),
-        amountDue: 25_500,
-        amountPaid: 0,
-        status: 'PENDING',
-      },
-      {
-        id: 'inst-4',
-        loanId: 'loan-1',
-        installmentNumber: 4,
-        dueDate: daysFromNow(31),
-        amountDue: 25_500,
-        amountPaid: 0,
-        status: 'PENDING',
-      },
-    ],
+    outstandingBalance: 51_000,
   },
 ];
 
 export const contributions: Contribution[] = [
   {
-    id: 'con-1',
-    memberId: 'mem-1',
-    memberName: 'Chidi Okafor',
+    id: 'seed-con-1',
+    memberId: 'seed-mem-1',
     amount: 20_000,
-    method: 'MANUAL',
-    status: 'CONFIRMED',
-    reference: 'manual-001',
-    createdAt: daysAgo(60),
+    reference: 'seed-manual-001',
+    source: 'MANUAL',
+    recordedBy: null,
+    contributionDate: daysAgo(60),
   },
   {
-    id: 'con-2',
-    memberId: 'mem-1',
-    memberName: 'Chidi Okafor',
+    id: 'seed-con-2',
+    memberId: 'seed-mem-1',
     amount: 15_000,
-    method: 'PAYSTACK',
-    status: 'CONFIRMED',
-    reference: 'paystack-001',
-    createdAt: daysAgo(30),
+    reference: 'seed-paystack-001',
+    source: 'PAYSTACK',
+    recordedBy: null,
+    contributionDate: daysAgo(30),
   },
   {
-    id: 'con-3',
-    memberId: 'mem-1',
-    memberName: 'Chidi Okafor',
+    id: 'seed-con-3',
+    memberId: 'seed-mem-2',
     amount: 10_000,
-    method: 'PAYSTACK',
-    status: 'CONFIRMED',
-    reference: 'paystack-002',
-    createdAt: daysAgo(5),
+    reference: 'seed-paystack-002',
+    source: 'PAYSTACK',
+    recordedBy: null,
+    contributionDate: daysAgo(5),
   },
 ];
-
-export const notifications: Notification[] = [
-  {
-    id: 'notif-1',
-    memberId: 'mem-1',
-    type: 'KYC_STATUS',
-    title: 'KYC verified',
-    message: 'Your identity document was approved by an officer.',
-    read: true,
-    createdAt: daysAgo(180),
-  },
-  {
-    id: 'notif-2',
-    memberId: 'mem-1',
-    type: 'CONTRIBUTION',
-    title: 'Contribution confirmed',
-    message: 'Your contribution of ₦10,000 was confirmed.',
-    read: false,
-    createdAt: daysAgo(5),
-  },
-  {
-    id: 'notif-3',
-    memberId: 'mem-2',
-    type: 'GUARANTOR_INVITE',
-    title: 'Guarantor request',
-    message: 'Chidi Okafor asked you to guarantee a loan request.',
-    read: false,
-    createdAt: daysAgo(3),
-  },
-];
-
-export function findMemberByEmail(email: string): Member | undefined {
-  return members.find((m) => m.email.toLowerCase() === email.toLowerCase());
-}
-
-export function findGuarantorById(id: string): { request: LoanRequest; guarantor: Guarantor } | undefined {
-  for (const request of loanRequests) {
-    const guarantor = request.guarantors.find((g) => g.id === id);
-    if (guarantor) return { request, guarantor };
-  }
-  return undefined;
-}

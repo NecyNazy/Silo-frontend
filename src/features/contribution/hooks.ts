@@ -23,10 +23,10 @@ export function useContributionSummary(memberId: string | undefined) {
   });
 }
 
-export function useAllContributions(params: { page?: number; size?: number } = {}) {
+export function useAllContributions() {
   return useQuery({
-    queryKey: ['contributions', 'all', params],
-    queryFn: () => listAllContributions(params),
+    queryKey: ['contributions', 'all'],
+    queryFn: () => listAllContributions(),
   });
 }
 

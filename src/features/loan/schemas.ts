@@ -1,9 +1,8 @@
 import { z } from 'zod';
 
 export const createLoanRequestSchema = z.object({
-  amount: z.coerce.number().positive('Amount must be greater than zero'),
+  amountRequested: z.coerce.number().positive('Amount must be greater than zero'),
   purpose: z.string().min(5, 'Tell us what this loan is for'),
-  termMonths: z.coerce.number().int().positive('Term must be at least 1 month'),
 });
 
 export type CreateLoanRequestFormValues = z.input<typeof createLoanRequestSchema>;
@@ -15,8 +14,10 @@ export const addGuarantorSchema = z.object({
 
 export type AddGuarantorFormValues = z.infer<typeof addGuarantorSchema>;
 
-export const rejectLoanRequestSchema = z.object({
-  reason: z.string().min(5, 'Give a reason for the rejection'),
+export const approveLoanRequestSchema = z.object({
+  interestRate: z.coerce.number().min(0, 'Interest rate must be zero or greater'),
+  durationMonths: z.coerce.number().int().positive('Duration must be at least 1 month'),
 });
 
-export type RejectLoanRequestFormValues = z.infer<typeof rejectLoanRequestSchema>;
+export type ApproveLoanRequestFormValues = z.input<typeof approveLoanRequestSchema>;
+export type ApproveLoanRequestSubmitValues = z.output<typeof approveLoanRequestSchema>;

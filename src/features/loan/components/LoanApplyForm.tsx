@@ -33,21 +33,11 @@ export function LoanApplyForm() {
       <FormAlert message={mutation.isError ? getErrorMessage(mutation.error) : null} />
 
       <div className="space-y-1.5">
-        <Label htmlFor="amount">Amount (NGN)</Label>
-        <Input id="amount" type="number" min={1} {...register('amount')} />
-        {errors.amount && (
+        <Label htmlFor="amountRequested">Amount (NGN)</Label>
+        <Input id="amountRequested" type="number" min={1} {...register('amountRequested')} />
+        {errors.amountRequested && (
           <p role="alert" className="text-xs text-red-600 dark:text-red-400">
-            {errors.amount.message}
-          </p>
-        )}
-      </div>
-
-      <div className="space-y-1.5">
-        <Label htmlFor="termMonths">Term (months)</Label>
-        <Input id="termMonths" type="number" min={1} {...register('termMonths')} />
-        {errors.termMonths && (
-          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
-            {errors.termMonths.message}
+            {errors.amountRequested.message}
           </p>
         )}
       </div>
@@ -61,6 +51,10 @@ export function LoanApplyForm() {
           </p>
         )}
       </div>
+
+      <p className="text-xs text-slate-500 dark:text-slate-400">
+        The interest rate and repayment term are set by an officer when your request is approved.
+      </p>
 
       <Button type="submit" isLoading={mutation.isPending}>
         Submit request

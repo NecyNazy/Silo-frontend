@@ -36,7 +36,7 @@ export function RepayScreen() {
         className="max-w-sm space-y-4"
         onSubmit={handleSubmit((values) =>
           mutation.mutate(
-            { loanId: loan.id, amount: values.amount },
+            { loanId: loan.id, amount: values.amount, reference: values.reference },
             { onSuccess: () => navigate(`/loans/${loan.id}`) },
           ),
         )}
@@ -49,6 +49,16 @@ export function RepayScreen() {
           {errors.amount && (
             <p role="alert" className="text-xs text-red-600 dark:text-red-400">
               {errors.amount.message}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="reference">Reference</Label>
+          <Input id="reference" {...register('reference')} />
+          {errors.reference && (
+            <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+              {errors.reference.message}
             </p>
           )}
         </div>

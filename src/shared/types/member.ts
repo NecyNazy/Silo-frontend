@@ -1,6 +1,4 @@
-export type Role = 'MEMBER' | 'OFFICER';
-
-export type MemberStatus = 'PENDING' | 'ACTIVE' | 'SUSPENDED' | 'CLOSED';
+export type MemberStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 
 export type KycStatus = 'PENDING' | 'VERIFIED' | 'REJECTED';
 
@@ -8,23 +6,32 @@ export interface Member {
   id: string;
   fullName: string;
   email: string;
-  phone: string;
-  role: Role;
-  status: MemberStatus;
+  phoneNumber: string;
   kycStatus: KycStatus;
-  creditScore: number;
-  idDocumentRef?: string;
-  createdAt: string;
+  idType?: string | null;
+  idNumber?: string | null;
+  idDocumentRef?: string | null;
+  status: MemberStatus;
+  joinedDate: string;
 }
 
-export interface UpdateMemberInput {
-  fullName?: string;
-  phone?: string;
+export interface CreateMemberInput {
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+}
+
+export interface UpdateMemberProfileInput {
+  fullName: string;
+  phoneNumber: string;
+  idType?: string;
+  idNumber?: string;
+  idDocumentRef?: string;
 }
 
 export interface RegisterMemberInput {
   fullName: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
   password: string;
 }

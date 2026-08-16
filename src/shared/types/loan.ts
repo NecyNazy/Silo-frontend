@@ -4,85 +4,87 @@ export type LoanStatus = 'ACTIVE' | 'CLOSED' | 'DEFAULTED';
 
 export type InstallmentStatus = 'PENDING' | 'PAID' | 'LATE' | 'DEFAULTED';
 
-export type GuarantorStatus = 'INVITED' | 'ACCEPTED' | 'DECLINED';
+export type GuarantorStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED';
 
-export interface Guarantor {
+export type RiskTier = 'LOW' | 'MEDIUM' | 'HIGH';
+
+export interface LoanGuarantor {
   id: string;
   loanRequestId: string;
-  guarantorMemberId: string;
-  guarantorName: string;
-  guarantorCreditScore: number;
+  memberId: string;
   status: GuarantorStatus;
-  respondedAt?: string;
-}
-
-export interface GuarantorInvite extends Guarantor {
-  requesterMemberId: string;
-  requesterName: string;
-  requesterCreditScore: number;
-  requestedAmount: number;
+  invitedAt: string;
 }
 
 export interface LoanRequest {
   id: string;
   memberId: string;
-  memberName: string;
-  amount: number;
+  amountRequested: number;
   purpose: string;
-  termMonths: number;
   status: LoanRequestStatus;
-  guarantors: Guarantor[];
-  createdAt: string;
-  decidedAt?: string;
-  rejectionReason?: string;
+  submittedAt: string;
+}
+
+/**
+ * The real backend has no GET endpoint that returns a loan request's
+ * guarantors — this shape is only produced by the MSW gap-fill handler
+ * (see tests/mocks/handlers/gaps.ts) until one exists.
+ */
+export interface LoanRequestWithGuarantors extends LoanRequest {
+  guarantors: LoanGuarantor[];
+}
+
+export interface GuarantorInvite {
+  id: string;
+  loanRequestId: string;
+  borrowerMemberId: string;
+  amountRequested: number;
+  purpose: string;
+  borrowerRiskTier: RiskTier;
+  invitedAt: string;
+}
+
+export interface AvailableGuarantor {
+  memberId: string;
+  email: string;
+  credibilityScore: number;
 }
 
 export interface LoanInstallment {
   id: string;
-  loanId: string;
   installmentNumber: number;
   dueDate: string;
-  amountDue: number;
-  amountPaid: number;
+  expectedAmount: number;
   status: InstallmentStatus;
+  paidDate?: string | null;
 }
 
 export interface Loan {
   id: string;
   loanRequestId: string;
   memberId: string;
-  memberName: string;
-  principal: number;
+  principalAmount: number;
   interestRate: number;
-  outstandingBalance: number;
+  durationMonths: number;
+  disbursedDate: string;
   status: LoanStatus;
-  disbursedAt: string;
+  outstandingBalance: number;
+}
+
+export interface LoanDetail extends Loan {
   installments: LoanInstallment[];
-  guarantors: Guarantor[];
-}
-
-export interface GuarantorLiability {
-  id: string;
-  loanId: string;
-  guarantorMemberId: string;
-  amount: number;
-  amountPaid: number;
-  status: 'OUTSTANDING' | 'PAID';
-  createdAt: string;
-}
-
-export interface AvailableGuarantor {
-  memberId: string;
-  fullName: string;
-  creditScore: number;
 }
 
 export interface CreateLoanRequestInput {
-  amount: number;
+  amountRequested: number;
   purpose: string;
-  termMonths: number;
 }
 
 export interface AddGuarantorInput {
   guarantorMemberId: string;
+}
+
+export interface ApproveLoanRequestInput {
+  interestRate: number;
+  durationMonths: number;
 }

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/features/auth/store';
-import type { AddGuarantorInput, CreateLoanRequestInput } from '@/shared/types/loan';
+import type { AddGuarantorInput, ApproveLoanRequestInput, CreateLoanRequestInput } from '@/shared/types/loan';
 import {
   addGuarantor,
   approveLoanRequest,
@@ -9,7 +9,6 @@ import {
   getLoanRequest,
   listAvailableGuarantors,
   listGuarantorInvites,
-  listGuarantorLiabilities,
   listLoanRequests,
   listLoans,
   rejectLoanRequest,
@@ -90,14 +89,6 @@ export function useLoanOrRequest(id: string | undefined) {
   };
 }
 
-export function useGuarantorLiabilities(loanId: string | undefined) {
-  return useQuery({
-    queryKey: ['loans', loanId, 'guarantor-liabilities'],
-    queryFn: () => listGuarantorLiabilities(loanId as string),
-    enabled: Boolean(loanId),
-  });
-}
-
 export function useCreateLoanRequest() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -148,10 +139,9 @@ export function useRespondToGuarantorInvite() {
 export function useApproveLoanRequest(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => approveLoanRequest(id),
+    mutationFn: (input: ApproveLoanRequestInput) => approveLoanRequest(id, input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['loan-requests', 'pending'] });
-      queryClient.invalidateQueries({ queryKey: ['loan-requests', id] });
+      queryClient.invalidateQueries({ queryKey: ['loan-requests'] });
       queryClient.invalidateQueries({ queryKey: ['loans'] });
     },
   });
@@ -160,10 +150,9 @@ export function useApproveLoanRequest(id: string) {
 export function useRejectLoanRequest(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (reason: string) => rejectLoanRequest(id, reason),
+    mutationFn: () => rejectLoanRequest(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['loan-requests', 'pending'] });
-      queryClient.invalidateQueries({ queryKey: ['loan-requests', id] });
+      queryClient.invalidateQueries({ queryKey: ['loan-requests'] });
     },
   });
 }

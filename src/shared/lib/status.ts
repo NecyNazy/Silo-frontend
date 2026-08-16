@@ -7,16 +7,20 @@ const TONE_BY_STATUS: Record<string, StatusTone> = {
   APPROVED: 'success',
   CONFIRMED: 'success',
   PAID: 'success',
+  SENT: 'success',
+  LOW: 'success',
   OUTSTANDING: 'warning',
   PENDING: 'warning',
   LATE: 'warning',
-  INVITED: 'info',
+  MEDIUM: 'warning',
   REJECTED: 'danger',
   DECLINED: 'danger',
   DEFAULTED: 'danger',
   FAILED: 'danger',
   SUSPENDED: 'danger',
+  HIGH: 'danger',
   CLOSED: 'neutral',
+  INACTIVE: 'neutral',
 };
 
 export function statusTone(status: string): StatusTone {

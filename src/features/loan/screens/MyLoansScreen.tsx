@@ -51,19 +51,19 @@ export function MyLoansScreen() {
   const { data: loans, isLoading: loansLoading } = useMyLoans();
 
   const rows: Row[] = [
-    ...(requests?.content ?? []).map((r) => ({
+    ...(requests ?? []).map((r) => ({
       id: r.id,
       kind: 'Request' as const,
-      amount: r.amount,
+      amount: r.amountRequested,
       status: r.status,
-      date: r.createdAt,
+      date: r.submittedAt,
     })),
-    ...(loans?.content ?? []).map((l) => ({
+    ...(loans ?? []).map((l) => ({
       id: l.id,
       kind: 'Loan' as const,
-      amount: l.principal,
+      amount: l.principalAmount,
       status: l.status,
-      date: l.disbursedAt,
+      date: l.disbursedDate,
     })),
   ];
 
@@ -78,6 +78,10 @@ export function MyLoansScreen() {
           </Button>
         }
       />
+      <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+        The backend doesn't expose list endpoints for loan requests or loans yet — this table is
+        backed by seed data until that lands, so requests you submit for real won't appear here.
+      </p>
       <DataTable
         columns={columns}
         data={rows}

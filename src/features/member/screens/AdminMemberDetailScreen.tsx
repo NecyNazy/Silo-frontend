@@ -19,7 +19,7 @@ import { formatDate } from '@/shared/lib/date';
 import type { MemberStatus } from '@/shared/types/member';
 import { useMember, useUpdateKycStatus, useUpdateMemberStatus } from '../hooks';
 
-const STATUS_OPTIONS: MemberStatus[] = ['PENDING', 'ACTIVE', 'SUSPENDED', 'CLOSED'];
+const STATUS_OPTIONS: MemberStatus[] = ['ACTIVE', 'INACTIVE', 'SUSPENDED'];
 
 export function AdminMemberDetailScreen() {
   const { id } = useParams<{ id: string }>();
@@ -107,9 +107,13 @@ export function AdminMemberDetailScreen() {
             <CardTitle>Profile</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-            <p>Phone: {member.phone}</p>
-            <p>Credit score: {member.creditScore}</p>
-            <p>Member since: {formatDate(member.createdAt)}</p>
+            <p>Phone: {member.phoneNumber}</p>
+            {member.idType && (
+              <p>
+                ID: {member.idType} {member.idNumber}
+              </p>
+            )}
+            <p>Member since: {formatDate(member.joinedDate)}</p>
           </CardContent>
         </Card>
       </div>

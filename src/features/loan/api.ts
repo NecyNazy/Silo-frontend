@@ -1,34 +1,33 @@
 import { apiClient } from '@/shared/api/client';
-import type { PageResponse } from '@/shared/types/api';
 import type {
   AddGuarantorInput,
+  ApproveLoanRequestInput,
   AvailableGuarantor,
   CreateLoanRequestInput,
-  Guarantor,
   GuarantorInvite,
-  GuarantorLiability,
   Loan,
+  LoanDetail,
+  LoanGuarantor,
   LoanRequest,
   LoanRequestStatus,
+  LoanRequestWithGuarantors,
   LoanStatus,
 } from '@/shared/types/loan';
 
 export interface ListLoanRequestsParams {
   status?: LoanRequestStatus;
   mine?: boolean;
-  page?: number;
-  size?: number;
 }
 
-export async function listLoanRequests(
-  params: ListLoanRequestsParams,
-): Promise<PageResponse<LoanRequest>> {
-  const { data } = await apiClient.get<PageResponse<LoanRequest>>('/loan-requests', { params });
+/** Gap-fill: the real backend has no list/detail GET for loan requests yet. */
+export async function listLoanRequests(params: ListLoanRequestsParams): Promise<LoanRequest[]> {
+  const { data } = await apiClient.get<LoanRequest[]>('/loan-requests', { params });
   return data;
 }
 
-export async function getLoanRequest(id: string): Promise<LoanRequest> {
-  const { data } = await apiClient.get<LoanRequest>(`/loan-requests/${id}`);
+/** Gap-fill: also the only source of a request's guarantors (no real endpoint lists them). */
+export async function getLoanRequest(id: string): Promise<LoanRequestWithGuarantors> {
+  const { data } = await apiClient.get<LoanRequestWithGuarantors>(`/loan-requests/${id}`);
   return data;
 }
 
@@ -37,21 +36,24 @@ export async function createLoanRequest(input: CreateLoanRequestInput): Promise<
   return data;
 }
 
-export async function approveLoanRequest(id: string): Promise<LoanRequest> {
-  const { data } = await apiClient.post<LoanRequest>(`/loan-requests/${id}/approve`);
+export async function approveLoanRequest(
+  id: string,
+  input: ApproveLoanRequestInput,
+): Promise<Loan> {
+  const { data } = await apiClient.post<Loan>(`/loan-requests/${id}/approve`, input);
   return data;
 }
 
-export async function rejectLoanRequest(id: string, reason: string): Promise<LoanRequest> {
-  const { data } = await apiClient.post<LoanRequest>(`/loan-requests/${id}/reject`, { reason });
+export async function rejectLoanRequest(id: string): Promise<LoanRequest> {
+  const { data } = await apiClient.post<LoanRequest>(`/loan-requests/${id}/reject`);
   return data;
 }
 
 export async function addGuarantor(
   loanRequestId: string,
   input: AddGuarantorInput,
-): Promise<Guarantor> {
-  const { data } = await apiClient.post<Guarantor>(
+): Promise<LoanGuarantor> {
+  const { data } = await apiClient.post<LoanGuarantor>(
     `/loan-requests/${loanRequestId}/guarantors`,
     input,
   );
@@ -73,31 +75,23 @@ export async function listGuarantorInvites(memberId: string): Promise<GuarantorI
 export async function respondToGuarantorInvite(
   guarantorId: string,
   action: 'accept' | 'decline',
-): Promise<Guarantor> {
-  const { data } = await apiClient.post<Guarantor>(`/guarantors/${guarantorId}/${action}`);
+): Promise<LoanGuarantor> {
+  const { data } = await apiClient.post<LoanGuarantor>(`/guarantors/${guarantorId}/${action}`);
   return data;
 }
 
 export interface ListLoansParams {
   status?: LoanStatus;
   mine?: boolean;
-  page?: number;
-  size?: number;
 }
 
-export async function listLoans(params: ListLoansParams): Promise<PageResponse<Loan>> {
-  const { data } = await apiClient.get<PageResponse<Loan>>('/loans', { params });
+/** Gap-fill: the real backend has no list GET for loans yet, only get-by-id. */
+export async function listLoans(params: ListLoansParams): Promise<Loan[]> {
+  const { data } = await apiClient.get<Loan[]>('/loans', { params });
   return data;
 }
 
-export async function getLoan(id: string): Promise<Loan> {
-  const { data } = await apiClient.get<Loan>(`/loans/${id}`);
-  return data;
-}
-
-export async function listGuarantorLiabilities(loanId: string): Promise<GuarantorLiability[]> {
-  const { data } = await apiClient.get<GuarantorLiability[]>(
-    `/loans/${loanId}/guarantor-liabilities`,
-  );
+export async function getLoan(id: string): Promise<LoanDetail> {
+  const { data } = await apiClient.get<LoanDetail>(`/loans/${id}`);
   return data;
 }

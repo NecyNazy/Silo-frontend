@@ -1,20 +1,15 @@
 import { Link } from 'react-router-dom';
-import { useContributionSummary } from '@/features/contribution/hooks';
 import { useMyLoans } from '@/features/loan/hooks';
 import { useMyProfile } from '@/features/member/hooks';
-import { useNotifications } from '@/features/notification/hooks';
 import { Card, CardContent, CardHeader, CardTitle, Money, PageHeader, StatusBadge } from '@/shared/components';
-import { formatDate } from '@/shared/lib/date';
+import { useMemberReportSummary } from '../hooks';
 
 export function MemberDashboardScreen() {
   const { data: member } = useMyProfile();
-  const { data: summary } = useContributionSummary(member?.id);
+  const { data: summary } = useMemberReportSummary(member?.id);
   const { data: loans } = useMyLoans();
-  const { data: notifications } = useNotifications();
 
-  const activeLoan = loans?.content.find((l) => l.status === 'ACTIVE');
-  const nextInstallment = activeLoan?.installments.find((i) => i.status === 'PENDING');
-  const unreadCount = notifications?.filter((n) => !n.read).length ?? 0;
+  const activeLoan = loans?.find((l) => l.status === 'ACTIVE');
 
   return (
     <div>
@@ -27,7 +22,7 @@ export function MemberDashboardScreen() {
           </CardHeader>
           <CardContent>
             <Money
-              amount={summary?.totalContributed ?? 0}
+              amount={summary?.totalContributions ?? 0}
               className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
             />
           </CardContent>
@@ -35,54 +30,42 @@ export function MemberDashboardScreen() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Active loan</CardTitle>
+            <CardTitle>Active loans</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+              {summary?.activeLoans ?? 0}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Total repaid</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Money
+              amount={summary?.totalRepayments ?? 0}
+              className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Outstanding balance</CardTitle>
           </CardHeader>
           <CardContent>
             {activeLoan ? (
               <Link
                 to={`/loans/${activeLoan.id}`}
-                className="text-indigo-700 hover:underline dark:text-indigo-400"
+                className="text-2xl font-semibold text-indigo-700 hover:underline dark:text-indigo-400"
               >
-                <Money amount={activeLoan.outstandingBalance} className="text-2xl font-semibold" />
+                <Money amount={activeLoan.outstandingBalance} />
               </Link>
             ) : (
               <p className="text-sm text-slate-500 dark:text-slate-400">None</p>
             )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Next installment</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {nextInstallment ? (
-              <>
-                <Money
-                  amount={nextInstallment.amountDue}
-                  className="text-lg font-semibold text-slate-900 dark:text-slate-100"
-                />
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Due {formatDate(nextInstallment.dueDate)}
-                </p>
-              </>
-            ) : (
-              <p className="text-sm text-slate-500 dark:text-slate-400">Nothing due</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Unread notifications</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Link
-              to="/notifications"
-              className="text-2xl font-semibold text-slate-900 hover:text-indigo-700 dark:text-slate-100 dark:hover:text-indigo-400"
-            >
-              {unreadCount}
-            </Link>
           </CardContent>
         </Card>
       </div>

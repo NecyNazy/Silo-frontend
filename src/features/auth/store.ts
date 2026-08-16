@@ -1,27 +1,28 @@
 import { create } from 'zustand';
-import { decodeJwt, type DecodedToken } from './lib/jwt';
 
 const STORAGE_KEY = 'silo.session';
 
-interface StoredSession {
-  token: string;
-  role: DecodedToken['role'];
+export type Role = 'MEMBER' | 'OFFICER';
+
+export interface SessionTokens {
+  accessToken: string;
+  refreshToken: string;
   memberId: string;
-  expiresAt: number;
+  role: Role;
 }
 
 interface AuthState {
-  token: string | null;
-  role: DecodedToken['role'] | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  role: Role | null;
   memberId: string | null;
-  expiresAt: number | null;
   isAuthenticated: boolean;
-  setSession: (token: string) => void;
+  setSession: (session: SessionTokens) => void;
   clearSession: () => void;
   hydrate: () => void;
 }
 
-function persist(session: StoredSession | null) {
+function persist(session: SessionTokens | null) {
   if (session) {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
   } else {
@@ -30,35 +31,32 @@ function persist(session: StoredSession | null) {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  token: null,
+  accessToken: null,
+  refreshToken: null,
   role: null,
   memberId: null,
-  expiresAt: null,
   isAuthenticated: false,
 
-  setSession: (token) => {
-    const decoded = decodeJwt(token);
-    if (!decoded) return;
-
-    const session: StoredSession = {
-      token,
-      role: decoded.role,
-      memberId: decoded.memberId,
-      expiresAt: decoded.exp * 1000,
-    };
+  setSession: (session) => {
     persist(session);
     set({
-      token: session.token,
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
       role: session.role,
       memberId: session.memberId,
-      expiresAt: session.expiresAt,
       isAuthenticated: true,
     });
   },
 
   clearSession: () => {
     persist(null);
-    set({ token: null, role: null, memberId: null, expiresAt: null, isAuthenticated: false });
+    set({
+      accessToken: null,
+      refreshToken: null,
+      role: null,
+      memberId: null,
+      isAuthenticated: false,
+    });
   },
 
   hydrate: () => {
@@ -66,16 +64,12 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (!raw) return;
 
     try {
-      const session = JSON.parse(raw) as StoredSession;
-      if (session.expiresAt <= Date.now()) {
-        persist(null);
-        return;
-      }
+      const session = JSON.parse(raw) as SessionTokens;
       set({
-        token: session.token,
+        accessToken: session.accessToken,
+        refreshToken: session.refreshToken,
         role: session.role,
         memberId: session.memberId,
-        expiresAt: session.expiresAt,
         isAuthenticated: true,
       });
     } catch {
@@ -85,7 +79,3 @@ export const useAuthStore = create<AuthState>((set) => ({
 }));
 
 useAuthStore.getState().hydrate();
-
-export function getAuthToken(): string | null {
-  return useAuthStore.getState().token;
-}

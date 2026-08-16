@@ -2,17 +2,17 @@ export interface DashboardMetrics {
   activeLoans: number;
   totalContributions: number;
   outstandingBalance: number;
-  defaultRatePercent: number;
-  generatedAt: string;
-}
-
-export interface ContributionTrendPoint {
-  period: string;
-  amount: number;
+  defaultRate: number;
 }
 
 export interface TopContributor {
   memberId: string;
-  memberName: string;
-  totalContributed: number;
+  totalContributions: number;
+}
+
+export interface MemberReportSummary {
+  memberId: string;
+  totalContributions: number;
+  activeLoans: number;
+  totalRepayments: number;
 }

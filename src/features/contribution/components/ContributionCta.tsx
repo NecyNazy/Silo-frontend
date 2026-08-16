@@ -29,10 +29,8 @@ export function ContributionCta({ email }: { email: string }) {
         return;
       }
 
-      getMemberContributions(memberId).then((page) => {
-        const matched = page.content.some(
-          (c) => c.reference === referenceRef.current && c.status === 'CONFIRMED',
-        );
+      getMemberContributions(memberId).then((contributions) => {
+        const matched = contributions.some((c) => c.reference === referenceRef.current);
         if (matched) {
           setPhase('confirmed');
           clearInterval(interval);

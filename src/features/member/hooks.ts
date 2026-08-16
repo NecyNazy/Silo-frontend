@@ -1,13 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/features/auth/store';
-import type { KycStatus, MemberStatus, UpdateMemberInput } from '@/shared/types/member';
+import type { KycStatus, MemberStatus, UpdateMemberProfileInput } from '@/shared/types/member';
 import {
   getMember,
   listMembers,
   updateKycStatus,
-  updateMember,
+  updateMemberProfile,
   updateMemberStatus,
-  uploadIdDocument,
   type ListMembersParams,
 } from './api';
 
@@ -24,17 +23,17 @@ export function useMyProfile() {
   return useMember(memberId ?? undefined);
 }
 
-export function useMembers(params: ListMembersParams) {
+export function useMembers(params: ListMembersParams = {}) {
   return useQuery({
     queryKey: ['members', 'list', params],
     queryFn: () => listMembers(params),
   });
 }
 
-export function useUpdateMember(id: string) {
+export function useUpdateMemberProfile(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: UpdateMemberInput) => updateMember(id, input),
+    mutationFn: (input: UpdateMemberProfileInput) => updateMemberProfile(id, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['members', id] });
     },
@@ -59,16 +58,6 @@ export function useUpdateKycStatus(id: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['members', id] });
       queryClient.invalidateQueries({ queryKey: ['members', 'list'] });
-    },
-  });
-}
-
-export function useUploadIdDocument(id: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (file: File) => uploadIdDocument(id, file),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['members', id] });
     },
   });
 }

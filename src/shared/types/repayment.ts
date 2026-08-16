@@ -1,19 +1,21 @@
-export type RepaymentType = 'INSTALLMENT' | 'LIABILITY';
-
 export interface Repayment {
   id: string;
   loanId: string;
-  type: RepaymentType;
+  payerMemberId: string;
+  liabilityId?: string | null;
   amount: number;
-  paidAt: string;
+  reference: string;
+  paymentDate: string;
 }
 
 export interface CreateRepaymentInput {
   loanId: string;
   amount: number;
+  reference: string;
 }
 
 export interface CreateLiabilityRepaymentInput {
   liabilityId: string;
   amount: number;
+  reference: string;
 }

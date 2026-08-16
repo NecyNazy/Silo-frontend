@@ -1,8 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { http, HttpResponse } from 'msw';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
+import { server } from '../../../../../tests/mocks/server';
 import { useAuthStore } from '../../store';
 import { LoginForm } from '../LoginForm';
 
@@ -28,7 +30,23 @@ describe('LoginForm', () => {
     expect(await screen.findByText(/password is required/i)).toBeInTheDocument();
   });
 
-  it('logs in with valid demo credentials', async () => {
+  it('logs in with valid credentials', async () => {
+    server.use(
+      http.post('/api/auth/login', () =>
+        HttpResponse.json({
+          success: true,
+          message: null,
+          data: {
+            accessToken: 'test-access-token',
+            refreshToken: 'test-refresh-token',
+            memberId: 'test-member-id',
+            role: 'MEMBER',
+          },
+          timestamp: new Date().toISOString(),
+        }),
+      ),
+    );
+
     const user = userEvent.setup();
     renderLoginForm();
 

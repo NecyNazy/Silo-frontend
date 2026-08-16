@@ -44,11 +44,11 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="phone">Phone</Label>
-        <Input id="phone" type="tel" autoComplete="tel" {...registerField('phone')} />
-        {errors.phone && (
+        <Label htmlFor="phoneNumber">Phone</Label>
+        <Input id="phoneNumber" type="tel" autoComplete="tel" {...registerField('phoneNumber')} />
+        {errors.phoneNumber && (
           <p role="alert" className="text-xs text-red-600 dark:text-red-400">
-            {errors.phone.message}
+            {errors.phoneNumber.message}
           </p>
         )}
       </div>

@@ -21,8 +21,8 @@ export function OfficerDashboardScreen() {
   if (isError || !metrics) return <ErrorState onRetry={() => refetch()} />;
 
   const donutData = [
-    { name: 'On track', value: 100 - metrics.defaultRatePercent },
-    { name: 'Defaulted', value: metrics.defaultRatePercent },
+    { name: 'On track', value: 100 - metrics.defaultRate },
+    { name: 'Defaulted', value: metrics.defaultRate },
   ];
 
   return (
@@ -60,7 +60,7 @@ export function OfficerDashboardScreen() {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
-              {metrics.defaultRatePercent.toFixed(1)}%
+              {metrics.defaultRate.toFixed(1)}%
             </p>
           </CardContent>
         </Card>
