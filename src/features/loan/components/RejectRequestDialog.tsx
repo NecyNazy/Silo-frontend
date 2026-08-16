@@ -12,14 +12,22 @@ import {
 import { getErrorMessage } from '@/shared/lib/error';
 import { useRejectLoanRequest } from '../hooks';
 
-export function RejectRequestDialog({ requestId }: { requestId: string }) {
+export function RejectRequestDialog({
+  requestId,
+  disabled,
+  disabledReason,
+}: {
+  requestId: string;
+  disabled?: boolean;
+  disabledReason?: string;
+}) {
   const [open, setOpen] = useState(false);
   const mutation = useRejectLoanRequest(requestId);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive" size="sm">
+        <Button variant="destructive" size="sm" disabled={disabled} title={disabled ? disabledReason : undefined}>
           Reject
         </Button>
       </DialogTrigger>

@@ -104,18 +104,20 @@ export function DataTable<TData>({
           <Button
             variant="outline"
             size="sm"
+            aria-label="Previous page"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           </Button>
           <Button
             variant="outline"
             size="sm"
+            aria-label="Next page"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4" aria-hidden="true" />
           </Button>
         </div>
       </div>

@@ -28,7 +28,7 @@ export function LoanDetailScreen() {
     return (
       <div>
         <PageHeader
-          title={`Loan request — ${request.purpose}`}
+          title={`Loan request: ${request.purpose}`}
           action={<StatusBadge status={request.status} />}
         />
         <div className="grid gap-6 md:grid-cols-2">
@@ -70,7 +70,7 @@ function LoanDetailBody({ loan }: { loan: LoanDetail }) {
   return (
     <div>
       <PageHeader
-        title={`Loan — ${loan.id}`}
+        title={`Loan ${loan.id}`}
         description={`Disbursed with ${loan.interestRate}% interest over ${loan.durationMonths} months`}
         action={<StatusBadge status={loan.status} />}
       />

@@ -1,15 +1,62 @@
 import { Link } from 'react-router-dom';
 import { useMyLoans } from '@/features/loan/hooks';
 import { useMyProfile } from '@/features/member/hooks';
-import { Card, CardContent, CardHeader, CardTitle, Money, PageHeader, StatusBadge } from '@/shared/components';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  ErrorState,
+  Money,
+  PageHeader,
+  StatusBadge,
+} from '@/shared/components';
+import { CardSkeleton } from '@/shared/components/Skeleton';
 import { useMemberReportSummary } from '../hooks';
 
 export function MemberDashboardScreen() {
-  const { data: member } = useMyProfile();
-  const { data: summary } = useMemberReportSummary(member?.id);
-  const { data: loans } = useMyLoans();
+  const {
+    data: member,
+    isLoading: memberLoading,
+    isError: memberError,
+    refetch: refetchMember,
+  } = useMyProfile();
+  const {
+    data: summary,
+    isLoading: summaryLoading,
+    isError: summaryError,
+    refetch: refetchSummary,
+  } = useMemberReportSummary(member?.id);
+  const {
+    data: loans,
+    isLoading: loansLoading,
+    isError: loansError,
+    refetch: refetchLoans,
+  } = useMyLoans();
 
   const activeLoan = loans?.find((l) => l.status === 'ACTIVE');
+
+  if (memberLoading || (member && (summaryLoading || loansLoading))) {
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <CardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
+
+  if (memberError || summaryError || loansError) {
+    return (
+      <ErrorState
+        onRetry={() => {
+          refetchMember();
+          refetchSummary();
+          refetchLoans();
+        }}
+      />
+    );
+  }
 
   return (
     <div>

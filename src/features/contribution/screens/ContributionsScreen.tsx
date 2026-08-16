@@ -1,6 +1,15 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMyProfile } from '@/features/member/hooks';
-import { Card, CardContent, CardHeader, CardTitle, DataTable, Money, PageHeader } from '@/shared/components';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DataTable,
+  ErrorState,
+  Money,
+  PageHeader,
+} from '@/shared/components';
 import { formatDate } from '@/shared/lib/date';
 import type { Contribution } from '@/shared/types/contribution';
 import { ContributionCta } from '../components/ContributionCta';
@@ -24,7 +33,12 @@ const columns: ColumnDef<Contribution, unknown>[] = [
 export function ContributionsScreen() {
   const { data: member } = useMyProfile();
   const { data: summary } = useContributionSummary(member?.id);
-  const { data: contributions, isLoading } = useMemberContributions(member?.id);
+  const {
+    data: contributions,
+    isLoading,
+    isError,
+    refetch,
+  } = useMemberContributions(member?.id);
 
   return (
     <div>
@@ -59,13 +73,17 @@ export function ContributionsScreen() {
         </Card>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={contributions ?? []}
-        isLoading={isLoading}
-        emptyTitle="No contributions yet"
-        searchPlaceholder="Search contributions…"
-      />
+      {isError ? (
+        <ErrorState onRetry={() => refetch()} />
+      ) : (
+        <DataTable
+          columns={columns}
+          data={contributions ?? []}
+          isLoading={isLoading}
+          emptyTitle="No contributions yet"
+          searchPlaceholder="Search contributions…"
+        />
+      )}
     </div>
   );
 }

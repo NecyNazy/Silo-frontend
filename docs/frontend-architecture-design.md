@@ -49,7 +49,7 @@ public site. No SEO requirement, no anonymous content to pre-render.
 | Styling | **Tailwind CSS v4 + hand-built Radix primitives** | Accessible unstyled primitives (dialog, dropdown, tabs, select) with Tailwind for the visual layer, following shadcn/ui's conventions without pulling from its CLI registry. Tailwind v4 resolved as latest at build time — class-based dark mode via `@custom-variant`, no `tailwind.config.js` needed. |
 | Charts | **Recharts** | Dashboard needs trend lines (contributions over time) and simple bar/donut breakdowns (default rate, top contributors) — Recharts covers both without D3-level complexity. |
 | API types | **Hand-maintained**, verified line-by-line against the backend's live `/v3/api-docs` | `openapi-typescript` codegen was the original plan (T6), but the frontend was built before a running backend existed to generate from. Types in `shared/types/*` were written by hand against the design doc, then corrected against the real OpenAPI spec once the backend came up — see §14 for what changed. Revisit codegen now that a live spec exists. |
-| Testing | **Vitest + React Testing Library** (unit/component), **Playwright** (e2e), **MSW** (gap-fill only — see §14 #4) | Same pattern as the backend's own test pyramid (T49): unit-level logic, integration-level flows, and a thin layer of true e2e golden paths. MSW's role narrowed from "mock everything" to "fill the handful of endpoints the real backend doesn't expose yet"; e2e specs stub the real endpoints directly via Playwright's `page.route()` instead, since the preview server has no dev-time proxy to the backend. |
+| Testing | **Vitest + React Testing Library** (unit/component), **Playwright** (e2e), **MSW** (gap-fill only — see §14 #4) | Same pattern as the backend's own test pyramid (T49): unit-level logic, integration-level flows, and a thin layer of true e2e golden paths. MSW's role narrowed from "mock everything" to "fill the handful of endpoints the real backend doesn't expose yet"; e2e specs stub the real endpoints they touch directly via Playwright's `page.route()`, or seed an authenticated `sessionStorage` session directly when a test doesn't need to exercise login itself (see §15 — the preview server was assumed to have no dev-time proxy to the backend, but empirically it does; see the callout in §15). |
 | Lint/format | **ESLint + Prettier + TypeScript `strict`** | Non-negotiable on a project where a `number | undefined` slipping through a balance calculation is a real bug, not a lint nit. |
 
 **Not chosen, deliberately:** Next.js (no SSR/SEO need — would add a
@@ -143,7 +143,7 @@ shows a visible banner saying so. Everything else hits the real API.
 | `/loans/apply` | New loan request form (amount + purpose only) | `POST /api/loan-requests`. Member does **not** choose a term — the officer sets `interestRate`/`durationMonths` at approval time |
 | `/loans/:id` | Schedule, outstanding balance, guarantors, status | `GET /api/loans/{id}` (real, but has no `guarantors` field); guarantors are read via the request's gap-filled detail through `loanRequestId`, or `GET /api/loan-requests/:id` *(gap)* directly for a still-pending request |
 | `/loans/:id/guarantors/add` | Add a guarantor to a pending request | `GET /api/members/available-guarantors` (returns `email` + `credibilityScore`, not a name), `POST /api/loan-requests/{id}/guarantors` |
-| `/loans/:id/repay` | Make a repayment | `POST /api/repayments` — requires a `reference` string, not just an amount |
+| `/loans/:id/repay` | Make a repayment | `POST /api/repayments` — requires a `reference` string, not just an amount. Overpayment is a hard 422, not capped server-side, so the amount field pre-fills and caps (`max` attribute + Zod `.max()`) at the loan's current `outstandingBalance` to avoid a guaranteed-fail round trip; the form sets `noValidate` so the app's own error styling shows instead of a native browser validation popup |
 | `/guarantor-invites` | Pending invites, with the borrower's risk tier, accept/decline | `GET /api/members/{id}/guarantor-invites` (already pre-filtered to pending; returns `borrowerRiskTier: LOW\|MEDIUM\|HIGH`, not a numeric score, and no borrower name — just `borrowerMemberId`), `POST /api/guarantors/{id}/accept\|decline` |
 | `/guarantor-liabilities` | Liabilities assigned after a default I guaranteed, pay down | Still Phase 2/unbuilt (§16) — and unlike the other gaps, there's no GET endpoint to even gap-fill; only `POST /api/repayments/liability` exists |
 | `/notifications` | Email delivery history, not an in-app inbox | `GET /api/notifications/member/{memberId}` → `eventType`/`channel`/`status: SENT\|FAILED`/`sentAt`. No `title`, `message`, or `read` field exists — see §14 |
@@ -184,7 +184,7 @@ unchanged from the original plan.
 ```
 ├── src/
 │   ├── app/
-│   │   ├── providers/        # QueryProvider, AuthProvider, ThemeProvider — all implemented
+│   │   ├── providers/        # QueryProvider, ThemeProvider — all implemented
 │   │   ├── router.tsx        # RoleGuard-wrapped route tree
 │   │   └── App.tsx
 │   ├── features/
@@ -294,6 +294,19 @@ success state before the server has confirmed it.
   member route subtree the same way, since without it an unauthenticated
   visitor could land on a member screen directly and only get bounced
   once a query failed.
+- **Officer self-action exclusion is enforced client-side too, not just
+  server-side.** The backend rejects an officer approving/rejecting their
+  own loan request, recording their own contribution, or changing their
+  own KYC/status with a 422 — an officer is a member first, so this can't
+  be role-gated away. The UI mirrors that rather than letting a form fail
+  predictably: `/admin/loan-requests` filters the logged-in officer's own
+  pending request out of the approval queue (and the detail screen
+  disables Approve/Reject with an explanation if reached directly by
+  URL); the manual-contribution member picker on `/admin/contributions`
+  excludes the officer; `/admin/members` excludes the officer from the
+  list, and `/admin/members/:id` disables the KYC/status controls if the
+  officer is viewing their own profile. Same principle as role gating
+  above — cosmetic/UX, the backend's 422 is the real boundary.
 
 ---
 
@@ -366,6 +379,11 @@ would be redundant.
    purpose }` only. **The member does not choose a term or rate** — that
    was the original plan, but the real `LoanRequestSubmitRequest` has no
    such fields; interest rate and duration are officer-set, at approval.
+   Same gate as the Contribute CTA in §9.1: "Apply for a loan" on `/loans`
+   is disabled (with a visible reason, not just a hover tooltip — disabled
+   buttons don't reliably fire `title` tooltips cross-browser) unless the
+   member's own profile shows `status === ACTIVE && kycStatus ===
+   VERIFIED`, and `/loans/apply` repeats the check if reached directly.
 2. `/loans/:id/guarantors/add` → pick from `available-guarantors` (shows
    each candidate's `email` and `credibilityScore` — there's no member
    name on this response) → `POST .../guarantors`.
@@ -419,8 +437,10 @@ only `POST /api/repayments/liability` to pay one down once it exists.
 - **Core components** (`shared/components/`): `DataTable` (sort, filter,
   pagination — used by every list screen), `StatusBadge` (semantic
   color mapping above), `Money` (currency formatter, right-aligned,
-  tabular), `EmptyState`, `ErrorState`, skeleton loaders per card/table
-  shape so nothing pops in unstyled.
+  tabular), `EmptyState`, `ErrorState`, `FilterPill` (the active/inactive
+  toggle used by every status-filter row, e.g. `/admin/members`,
+  `/admin/loans`), skeleton loaders per card/table shape so nothing pops
+  in unstyled.
 - **Dark mode** (pulled forward from the Phase 3 stretch list in §16 —
   implemented, not deferred): a `ThemeToggle` cycles
   system → light → dark → system, backed by a Zustand store persisted to
@@ -581,13 +601,46 @@ representative tests per layer, not the exhaustive list below:
 - **Unit**: Zod schemas, formatters, pure hooks logic (Vitest).
 - **Component**: forms and status displays in isolation with MSW-mocked
   API responses (React Testing Library).
-- **E2E** (Playwright): one golden path implemented — register → login →
-  land on the member dashboard, with the real (non-gap-mocked) endpoints
-  it touches stubbed directly via `page.route()` rather than depending on
-  a live backend being reachable from the preview server during CI. The
-  fuller list this section originally scoped (KYC approval → contribution;
-  loan request → guarantor → approval → disbursement; repayment → schedule
-  update; default-sweep effects) is still just scope, not built yet.
+- **E2E** (Playwright), three specs so far:
+  - `register-login.spec.ts` — register → login → land on the member
+    dashboard, with the real (non-gap-mocked) endpoints it touches
+    stubbed via `page.route()`.
+  - `officer-self-exclusion.spec.ts` — an officer never sees their own
+    pending loan request in the `/admin/loan-requests` approval queue.
+    Seeds an authenticated `sessionStorage` session directly instead of
+    driving the login form, since this test only cares about the
+    MSW-gap-filled `/api/loan-requests` list, not auth.
+  - `repayment-cap.spec.ts` — the repayment amount input is pre-filled
+    and capped at the loan's outstanding balance. Same session-seeding
+    approach, plus `test.use({ serviceWorkers: 'block' })` since this
+    test only touches a real (non-gap) endpoint and doesn't need MSW.
+  - The fuller list this section originally scoped (KYC approval →
+    contribution; loan request → guarantor → approval → disbursement;
+    default-sweep effects) is still just scope, not built yet.
+
+  **Correction to the original assumption:** this section and §2 stated
+  the preview server (`npm run preview`, what `test:e2e` builds and
+  serves) has no dev-time proxy to the backend, so `page.route()` stubs
+  were assumed to be the only thing intercepting a request. That's not
+  true empirically — confirmed by `curl`ing the running preview server
+  directly (no browser involved): `POST /api/auth/login` on port 4173
+  returned a real response from the actual backend on `:8080`, meaning
+  `vite preview` in the installed Vite version (8.2.1) does apply the
+  `server.proxy` config from `vite.config.ts`, same as `npm run dev`.
+  Two consequences worth the team's attention, not yet resolved:
+  1. A `page.route()` stub for an endpoint MSW's service worker also
+     leaves unhandled can lose the race — MSW's `bypass()` re-fetches
+     from *inside* the service worker, and Playwright's page-level route
+     interception doesn't reliably see service-worker-initiated
+     requests. That's why the two newer specs above sidestep `/auth/login`
+     entirely (session-seeding) rather than trying to stub it.
+  2. If a real backend happens to be reachable at `VITE_BACKEND_ORIGIN`
+     wherever `test:e2e` runs (including CI), tests can silently hit it
+     instead of the intended stub. Worth deciding deliberately — e.g.
+     pointing `VITE_BACKEND_ORIGIN` at an address that's guaranteed
+     unreachable in CI, or setting `preview.proxy = undefined` for the
+     e2e build — rather than continuing to assume isolation that isn't
+     actually there.
 
 ---
 

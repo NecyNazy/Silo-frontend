@@ -9,8 +9,8 @@
 body {
   margin: 0;
   color-scheme: light;
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: var(--color-slate-50);
+  color: var(--color-slate-900);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -18,8 +18,8 @@ body {
 
 .dark body {
   color-scheme: dark;
-  background-color: #020617;
-  color: #f1f5f9;
+  background-color: var(--color-slate-950);
+  color: var(--color-slate-100);
 }
 
 #root {

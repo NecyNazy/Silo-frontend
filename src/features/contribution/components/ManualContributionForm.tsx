@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
+import { useAuthStore } from '@/features/auth/store';
 import { useMembers } from '@/features/member/hooks';
 import {
   Button,
@@ -21,7 +22,9 @@ import {
 } from '../schemas';
 
 export function ManualContributionForm() {
+  const officerId = useAuthStore((s) => s.memberId);
   const { data: members } = useMembers();
+  const eligibleMembers = members?.filter((member) => member.id !== officerId);
   const mutation = useRecordManualContribution();
   const {
     register,
@@ -55,7 +58,7 @@ export function ManualContributionForm() {
                 <SelectValue placeholder="Select a member" />
               </SelectTrigger>
               <SelectContent>
-                {members?.map((member) => (
+                {eligibleMembers?.map((member) => (
                   <SelectItem key={member.id} value={member.id}>
                     {member.fullName}
                   </SelectItem>

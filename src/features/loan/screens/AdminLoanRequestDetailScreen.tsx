@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import { useAuthStore } from '@/features/auth/store';
 import { useMember } from '@/features/member/hooks';
 import {
   Card,
@@ -18,6 +19,7 @@ import { useLoanRequest } from '../hooks';
 
 export function AdminLoanRequestDetailScreen() {
   const { id } = useParams<{ id: string }>();
+  const officerId = useAuthStore((s) => s.memberId);
   const { data: request, isLoading, isError, refetch } = useLoanRequest(id);
   const { data: member } = useMember(request?.memberId);
 
@@ -25,7 +27,8 @@ export function AdminLoanRequestDetailScreen() {
   if (isError || !request) return <ErrorState onRetry={() => refetch()} />;
 
   const acceptedGuarantors = request.guarantors.filter((g) => g.status === 'ACCEPTED');
-  const canApprove = request.status === 'PENDING' && acceptedGuarantors.length > 0;
+  const isOwnRequest = request.memberId === officerId;
+  const canApprove = request.status === 'PENDING' && acceptedGuarantors.length > 0 && !isOwnRequest;
 
   return (
     <div>
@@ -50,13 +53,18 @@ export function AdminLoanRequestDetailScreen() {
             <CardTitle>Risk & credibility</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-            <p>KYC status: {member ? <StatusBadge status={member.kycStatus} /> : '—'}</p>
-            <p>Account status: {member ? <StatusBadge status={member.status} /> : '—'}</p>
+            <p>KYC status: {member ? <StatusBadge status={member.kycStatus} /> : 'Not available'}</p>
+            <p>Account status: {member ? <StatusBadge status={member.status} /> : 'Not available'}</p>
             <p>
               Accepted guarantors: {acceptedGuarantors.length} of {request.guarantors.length}{' '}
               invited
             </p>
-            {!canApprove && request.status === 'PENDING' && (
+            {isOwnRequest && request.status === 'PENDING' && (
+              <p className="text-amber-700 dark:text-amber-400">
+                This is your own request. Another officer needs to approve or reject it.
+              </p>
+            )}
+            {!isOwnRequest && !canApprove && request.status === 'PENDING' && (
               <p className="text-amber-700 dark:text-amber-400">
                 Needs at least one accepted guarantor before it can be approved.
               </p>
@@ -76,17 +84,20 @@ export function AdminLoanRequestDetailScreen() {
 
       {request.status === 'PENDING' && (
         <div className="mt-6 flex gap-2">
-          {canApprove ? (
-            <ApproveRequestDialog requestId={request.id} />
-          ) : (
-            <span
-              title="Needs at least one accepted guarantor"
-              className="inline-flex h-10 cursor-not-allowed items-center rounded-md bg-slate-200 px-4 text-sm font-medium text-slate-400 dark:bg-slate-800 dark:text-slate-600"
-            >
-              Approve
-            </span>
-          )}
-          <RejectRequestDialog requestId={request.id} />
+          <ApproveRequestDialog
+            requestId={request.id}
+            disabled={!canApprove}
+            disabledReason={
+              isOwnRequest
+                ? 'An officer cannot approve their own loan request'
+                : 'Needs at least one accepted guarantor'
+            }
+          />
+          <RejectRequestDialog
+            requestId={request.id}
+            disabled={isOwnRequest}
+            disabledReason="An officer cannot reject their own loan request"
+          />
         </div>
       )}
     </div>

@@ -7,7 +7,9 @@ async function prepare() {
   if (import.meta.env.VITE_ENABLE_MOCKS === 'false') return;
 
   const { worker } = await import('../tests/mocks/browser');
-  return worker.start({ onUnhandledRequest: 'bypass' });
+  return worker.start({ onUnhandledRequest: 'bypass' }).catch((error) => {
+    console.error('Mock service worker failed to start; requests will hit the real API only', error);
+  });
 }
 
 prepare().then(() => {

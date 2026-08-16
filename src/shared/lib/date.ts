@@ -6,7 +6,7 @@ function toDate(value: string | Date): Date {
 
 export function formatDate(value: string | Date, pattern = 'dd MMM yyyy'): string {
   const date = toDate(value);
-  return isValid(date) ? format(date, pattern) : '—';
+  return isValid(date) ? format(date, pattern) : '-';
 }
 
 export function formatDateTime(value: string | Date): string {
@@ -15,5 +15,5 @@ export function formatDateTime(value: string | Date): string {
 
 export function formatRelative(value: string | Date): string {
   const date = toDate(value);
-  return isValid(date) ? formatDistanceToNow(date, { addSuffix: true }) : '—';
+  return isValid(date) ? formatDistanceToNow(date, { addSuffix: true }) : '-';
 }

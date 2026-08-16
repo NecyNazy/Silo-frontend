@@ -27,7 +27,7 @@ export interface LoanRequest {
 
 /**
  * The real backend has no GET endpoint that returns a loan request's
- * guarantors — this shape is only produced by the MSW gap-fill handler
+ * guarantors. This shape is only produced by the MSW gap-fill handler
  * (see tests/mocks/handlers/gaps.ts) until one exists.
  */
 export interface LoanRequestWithGuarantors extends LoanRequest {

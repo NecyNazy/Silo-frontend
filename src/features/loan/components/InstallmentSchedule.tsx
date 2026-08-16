@@ -31,7 +31,7 @@ export function InstallmentSchedule({ installments }: { installments: LoanInstal
             <TableCell>
               <Money amount={installment.expectedAmount} />
             </TableCell>
-            <TableCell>{installment.paidDate ? formatDate(installment.paidDate) : '—'}</TableCell>
+            <TableCell>{installment.paidDate ? formatDate(installment.paidDate) : '-'}</TableCell>
             <TableCell>
               <StatusBadge status={installment.status} />
             </TableCell>

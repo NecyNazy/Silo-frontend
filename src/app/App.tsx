@@ -1,5 +1,4 @@
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './providers/AuthProvider';
 import { QueryProvider } from './providers/QueryProvider';
 import { ThemeProvider } from './providers/ThemeProvider';
 import { AppRouter } from './router';
@@ -11,9 +10,7 @@ export function App() {
       <ThemeProvider>
         <QueryProvider>
           <BrowserRouter>
-            <AuthProvider>
-              <AppRouter />
-            </AuthProvider>
+            <AppRouter />
           </BrowserRouter>
         </QueryProvider>
       </ThemeProvider>

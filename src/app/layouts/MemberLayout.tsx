@@ -69,7 +69,7 @@ export function MemberLayout() {
             to={item.to}
             className={({ isActive }) =>
               cn(
-                'flex flex-col items-center gap-0.5 px-2 py-1 text-[11px] font-medium text-slate-500 dark:text-slate-400',
+                'flex flex-col items-center gap-0.5 px-2 py-1 text-xs font-medium text-slate-500 dark:text-slate-400',
                 isActive && 'text-indigo-700 dark:text-indigo-400',
               )
             }

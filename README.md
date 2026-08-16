@@ -43,14 +43,18 @@ static hosting).
 
 - `npm run dev` — start the dev server (with the backend proxy)
 - `npm run build` — type-check and build for production
-- `npm run preview` — preview the production build (no backend proxy — see
-  `docs/deployment.md`)
+- `npm run preview` — preview the production build. Empirically this
+  *also* applies `vite.config.ts`'s dev proxy (confirmed by `curl`ing it
+  directly), contrary to what was originally assumed here — see the §15
+  callout in the architecture doc before relying on it being isolated
+  from a live backend
 - `npm run lint` — ESLint
 - `npm run format` — Prettier
 - `npm test` / `npm run test:watch` — Vitest (unit + component)
 - `npm run test:e2e` — Playwright (builds and serves the app first; stubs
-  the real endpoints it touches directly rather than depending on a live
-  backend — see §15 of the architecture doc)
+  the real endpoints it touches directly, or seeds an authenticated
+  session directly for tests that don't need to exercise login — see §15
+  of the architecture doc, including the proxy caveat above)
 
 ## Project structure
 

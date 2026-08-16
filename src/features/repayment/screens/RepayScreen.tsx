@@ -6,38 +6,45 @@ import { Button, ErrorState, FormAlert, Input, Label, Money, PageHeader } from '
 import { Skeleton } from '@/shared/components/Skeleton';
 import { getErrorMessage } from '@/shared/lib/error';
 import { useCreateRepayment } from '../hooks';
-import { repaymentSchema, type RepaymentFormValues, type RepaymentSubmitValues } from '../schemas';
+import { createRepaymentSchema, type RepaymentFormValues, type RepaymentSubmitValues } from '../schemas';
 
 export function RepayScreen() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { data: loan, isLoading, isError } = useLoan(id);
+
+  if (isLoading) return <Skeleton className="h-48 w-full" />;
+  if (isError || !loan) return <ErrorState message="Loan not found." />;
+
+  return <RepayForm loanId={loan.id} outstandingBalance={loan.outstandingBalance} />;
+}
+
+function RepayForm({ loanId, outstandingBalance }: { loanId: string; outstandingBalance: number }) {
+  const navigate = useNavigate();
   const mutation = useCreateRepayment();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<RepaymentFormValues, unknown, RepaymentSubmitValues>({
-    resolver: zodResolver(repaymentSchema),
+    resolver: zodResolver(createRepaymentSchema(outstandingBalance)),
+    defaultValues: { amount: outstandingBalance },
   });
-
-  if (isLoading) return <Skeleton className="h-48 w-full" />;
-  if (isError || !loan) return <ErrorState message="Loan not found." />;
 
   return (
     <div>
-      <PageHeader title="Make a repayment" description={`Loan ${loan.id}`} />
+      <PageHeader title="Make a repayment" description={`Loan ${loanId}`} />
 
       <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
-        Outstanding balance: <Money amount={loan.outstandingBalance} className="inline font-medium" />
+        Outstanding balance: <Money amount={outstandingBalance} className="inline font-medium" />
       </p>
 
       <form
         className="max-w-sm space-y-4"
+        noValidate
         onSubmit={handleSubmit((values) =>
           mutation.mutate(
-            { loanId: loan.id, amount: values.amount, reference: values.reference },
-            { onSuccess: () => navigate(`/loans/${loan.id}`) },
+            { loanId, amount: values.amount, reference: values.reference },
+            { onSuccess: () => navigate(`/loans/${loanId}`) },
           ),
         )}
       >
@@ -45,7 +52,7 @@ export function RepayScreen() {
 
         <div className="space-y-1.5">
           <Label htmlFor="amount">Amount (NGN)</Label>
-          <Input id="amount" type="number" min={1} {...register('amount')} />
+          <Input id="amount" type="number" min={1} max={outstandingBalance} {...register('amount')} />
           {errors.amount && (
             <p role="alert" className="text-xs text-red-600 dark:text-red-400">
               {errors.amount.message}

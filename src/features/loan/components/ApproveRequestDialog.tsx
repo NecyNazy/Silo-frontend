@@ -21,7 +21,15 @@ import {
   type ApproveLoanRequestSubmitValues,
 } from '../schemas';
 
-export function ApproveRequestDialog({ requestId }: { requestId: string }) {
+export function ApproveRequestDialog({
+  requestId,
+  disabled,
+  disabledReason,
+}: {
+  requestId: string;
+  disabled?: boolean;
+  disabledReason?: string;
+}) {
   const [open, setOpen] = useState(false);
   const mutation = useApproveLoanRequest(requestId);
   const {
@@ -35,13 +43,15 @@ export function ApproveRequestDialog({ requestId }: { requestId: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm">Approve</Button>
+        <Button size="sm" disabled={disabled} title={disabled ? disabledReason : undefined}>
+          Approve
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Approve loan request</DialogTitle>
           <DialogDescription>
-            Set the terms — this creates the loan and its installment schedule.
+            Set the terms. This creates the loan and its installment schedule.
           </DialogDescription>
         </DialogHeader>
         <form

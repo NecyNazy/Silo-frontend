@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { DataTable, Money, PageHeader, StatusBadge } from '@/shared/components';
+import { DataTable, ErrorState, FilterPill, Money, PageHeader, StatusBadge } from '@/shared/components';
 import { formatDate } from '@/shared/lib/date';
 import type { Loan, LoanStatus } from '@/shared/types/loan';
 import { useLoans } from '../hooks';
@@ -50,7 +50,7 @@ const STATUS_FILTERS: { label: string; value: LoanStatus | 'ALL' }[] = [
 
 export function AdminLoansScreen() {
   const [statusFilter, setStatusFilter] = useState<LoanStatus | 'ALL'>('ALL');
-  const { data, isLoading } = useLoans({
+  const { data, isLoading, isError, refetch } = useLoans({
     status: statusFilter === 'ALL' ? undefined : statusFilter,
   });
 
@@ -59,33 +59,33 @@ export function AdminLoansScreen() {
       <PageHeader title="Loans" description="All loans, filterable by status." />
 
       <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-        The backend doesn't expose a loans list endpoint yet — this table is backed by seed data
+        The backend doesn't expose a loans list endpoint yet. This table is backed by seed data
         until that lands.
       </p>
 
       <div className="mb-4 flex gap-2">
         {STATUS_FILTERS.map((filter) => (
-          <button
+          <FilterPill
             key={filter.value}
+            active={filter.value === statusFilter}
             onClick={() => setStatusFilter(filter.value)}
-            className={
-              filter.value === statusFilter
-                ? 'rounded-full bg-indigo-700 px-3 py-1 text-xs font-medium text-white dark:bg-indigo-600'
-                : 'rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'
-            }
           >
             {filter.label}
-          </button>
+          </FilterPill>
         ))}
       </div>
 
-      <DataTable
-        columns={columns}
-        data={data ?? []}
-        isLoading={isLoading}
-        emptyTitle="No loans found"
-        searchPlaceholder="Search loans…"
-      />
+      {isError ? (
+        <ErrorState onRetry={() => refetch()} />
+      ) : (
+        <DataTable
+          columns={columns}
+          data={data ?? []}
+          isLoading={isLoading}
+          emptyTitle="No loans found"
+          searchPlaceholder="Search loans…"
+        />
+      )}
     </div>
   );
 }

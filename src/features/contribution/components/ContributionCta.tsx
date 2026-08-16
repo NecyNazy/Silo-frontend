@@ -55,7 +55,7 @@ export function ContributionCta({ email }: { email: string }) {
   if (!isConfigured) {
     return (
       <p className="text-sm text-slate-500 dark:text-slate-400">
-        Paystack isn't configured in this environment — contributions can still be recorded
+        Paystack isn't configured in this environment. Contributions can still be recorded
         manually by an officer.
       </p>
     );
@@ -80,7 +80,7 @@ export function ContributionCta({ email }: { email: string }) {
   if (phase === 'timeout') {
     return (
       <p className="text-sm text-slate-600 dark:text-slate-400">
-        We'll notify you once this is confirmed — check your notifications shortly.
+        We'll notify you once this is confirmed. Check your notifications shortly.
       </p>
     );
   }
