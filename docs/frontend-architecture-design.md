@@ -39,7 +39,7 @@ public site. No SEO requirement, no anonymous content to pre-render.
 | Concern | Choice | Why |
 |---|---|---|
 | Build tool | **Vite** | Confirmed by team decision. Fast dev server, native ESM, first-class React + TS template. |
-| Framework | **React 19 + TypeScript** (`strict`) | SPA behind auth; matches the team's existing JS/TS familiarity from a bootcamp cohort; huge ecosystem for the forms/tables/charts this app is mostly made of. React 19 rather than 18 — the version available when the project was actually scaffolded. |
+| Framework | **React 19 + TypeScript** (`strict`) | SPA behind auth; matches the team's existing JS/TS familiarity; huge ecosystem for the forms/tables/charts this app is mostly made of. React 19 rather than 18 — the version available when the project was actually scaffolded. |
 | Routing | **React Router v6** | Nested routes map cleanly onto the role-based layout split (member shell vs officer shell). |
 | Server state | **TanStack Query** | The backend is REST + SSE, not GraphQL — Query gives caching, retry, background refetch, and cache invalidation without hand-rolling it. Every "list of X" and "X detail" screen is a query; every form submit is a mutation that invalidates the right query keys. |
 | Client/session state | **Zustand** (small, scoped stores) | Only real client-only state is auth/session and UI state (modals, filters). Avoid Redux ceremony for a state surface this small. |
@@ -48,7 +48,7 @@ public site. No SEO requirement, no anonymous content to pre-render.
 | Real-time | **native `EventSource`**, wrapped in `useSse()` | Talks to `GET /api/reports/stream`, confirmed to exist on the real backend. The hook is built but not yet wired into the dashboard — Phase 1 ships polling instead (§16); activating SSE is a fast-follow, not a rebuild. |
 | Styling | **Tailwind CSS v4 + hand-built Radix primitives** | Accessible unstyled primitives (dialog, dropdown, tabs, select) with Tailwind for the visual layer, following shadcn/ui's conventions without pulling from its CLI registry. Tailwind v4 resolved as latest at build time — class-based dark mode via `@custom-variant`, no `tailwind.config.js` needed. |
 | Charts | **Recharts** | Dashboard needs trend lines (contributions over time) and simple bar/donut breakdowns (default rate, top contributors) — Recharts covers both without D3-level complexity. |
-| API types | **Hand-maintained**, verified line-by-line against the backend's live `/v3/api-docs` | `openapi-typescript` codegen was the original plan (T6), but the frontend was built before a running backend existed to generate from. Types in `shared/types/*` were written by hand against the design doc, then corrected against the real OpenAPI spec once the backend came up — see §14 for what changed. Revisit codegen now that a live spec exists. |
+| API types | **Hand-maintained**, verified line-by-line against the backend's live `/v3/api-docs` | `openapi-typescript` . Types in `shared/types/*` were written by hand against the design doc, then corrected against the real OpenAPI spec after integration to the backend — see §14 for what changed. |
 | Testing | **Vitest + React Testing Library** (unit/component), **Playwright** (e2e), **MSW** (gap-fill only — see §14 #4) | Same pattern as the backend's own test pyramid (T49): unit-level logic, integration-level flows, and a thin layer of true e2e golden paths. MSW's role narrowed from "mock everything" to "fill the handful of endpoints the real backend doesn't expose yet"; e2e specs stub the real endpoints they touch directly via Playwright's `page.route()`, or seed an authenticated `sessionStorage` session directly when a test doesn't need to exercise login itself (see §15 — the preview server was assumed to have no dev-time proxy to the backend, but empirically it does; see the callout in §15). |
 | Lint/format | **ESLint + Prettier + TypeScript `strict`** | Non-negotiable on a project where a `number | undefined` slipping through a balance calculation is a real bug, not a lint nit. |
 
@@ -176,10 +176,7 @@ backend doc gives for its own modularity applies here: a feature owns its
 API calls, types, hooks, and screens, and cross-feature reuse goes through
 `shared/`, not by reaching into another feature's internals.
 
-The tree below is scaffolded at the **repo root**, not under a `frontend/`
-subfolder — this repo *is* the frontend, so the extra wrapper directory the
-original diagram showed would've been redundant. Internal structure is
-unchanged from the original plan.
+The tree below is scaffolded at the **repo root**, as this repo *is* the frontend.
 
 ```
 ├── src/
@@ -271,9 +268,7 @@ success state before the server has confirmed it.
   with client-side.
 - Token storage: in-memory (Zustand, not persisted) plus a short-lived
   `sessionStorage` mirror so a page refresh doesn't force re-login within
-  the same tab. `localStorage` is still avoided even though a refresh
-  endpoint now exists (§14 #1, resolved) — no reason has come up yet to
-  revisit that tradeoff.
+  the same tab.
 - `POST /api/auth/refresh` (confirmed to exist, and implemented): on any
   response that looks unauthenticated, the Axios interceptor exchanges
   the stored refresh token for a new access+refresh pair and retries the
@@ -402,8 +397,7 @@ would be redundant.
    in the body — this is the officer setting the terms the member never
    chose in step 1. `Loan` + installment schedule created server-side.
    Member's `/loans/:id` now shows the schedule. Rejecting takes no body
-   at all — there's no rejection-reason field, despite the original plan
-   assuming one.
+   at all — there's no rejection-reason field.
 
 ### 9.4 Default → guarantor liability
 Unchanged from the original plan and still entirely unbuilt (Phase 2,
@@ -549,7 +543,7 @@ turned up that nobody had thought to ask about yet.
 5. **Password reset.** Still not documented or implemented — still
    likely needed before this ships to real members.
 
-### New findings (not anticipated by the original plan)
+### New findings
 
 6. **Response envelope.** Every real response wraps its payload:
    `{ success, message, data, timestamp }`. Errors use a different,
