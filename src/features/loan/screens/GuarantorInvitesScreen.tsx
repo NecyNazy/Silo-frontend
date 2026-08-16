@@ -26,8 +26,10 @@ export function GuarantorInvitesScreen() {
             <Card key={invite.id}>
               <CardContent className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="font-medium text-slate-900">{invite.requesterName}</p>
-                  <p className="text-sm text-slate-500">
+                  <p className="font-medium text-slate-900 dark:text-slate-100">
+                    {invite.requesterName}
+                  </p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
                     Requesting <Money amount={invite.requestedAmount} className="inline" /> —
                     requester credit score {invite.requesterCreditScore}
                   </p>

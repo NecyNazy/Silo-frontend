@@ -41,13 +41,17 @@ export function AdminMemberDetailScreen() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-500">Current status:</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400">Current status:</span>
               <StatusBadge status={member.kycStatus} />
             </div>
             {member.idDocumentRef ? (
-              <p className="text-sm text-slate-500">ID document on file: {member.idDocumentRef}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                ID document on file: {member.idDocumentRef}
+              </p>
             ) : (
-              <p className="text-sm text-amber-700">No ID document uploaded yet.</p>
+              <p className="text-sm text-amber-700 dark:text-amber-400">
+                No ID document uploaded yet.
+              </p>
             )}
             <div className="flex gap-2">
               <Button
@@ -77,7 +81,7 @@ export function AdminMemberDetailScreen() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-500">Current status:</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400">Current status:</span>
               <StatusBadge status={member.status} />
             </div>
             <Select
@@ -102,7 +106,7 @@ export function AdminMemberDetailScreen() {
           <CardHeader>
             <CardTitle>Profile</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-slate-600">
+          <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
             <p>Phone: {member.phone}</p>
             <p>Credit score: {member.creditScore}</p>
             <p>Member since: {formatDate(member.createdAt)}</p>

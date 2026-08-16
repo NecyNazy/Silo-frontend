@@ -51,11 +51,13 @@ export function IdDocumentUpload({ member }: { member: Member }) {
           {member.idDocumentRef ? 'Replace ID document' : 'Upload ID document'}
         </Button>
         {member.idDocumentRef && !uploadMutation.isPending && (
-          <span className="text-xs text-slate-500">Document on file</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">Document on file</span>
         )}
       </div>
       {uploadMutation.isSuccess && (
-        <p className="text-sm text-emerald-700">Document uploaded — pending officer review.</p>
+        <p className="text-sm text-emerald-700 dark:text-emerald-400">
+          Document uploaded — pending officer review.
+        </p>
       )}
     </div>
   );

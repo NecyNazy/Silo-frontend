@@ -97,7 +97,7 @@ const AdminContributionsScreen = lazyScreen(
 );
 
 function RouteFallback() {
-  return <div className="p-8 text-sm text-slate-400">Loading…</div>;
+  return <div className="p-8 text-sm text-slate-400 dark:text-slate-500">Loading…</div>;
 }
 
 function HomeRedirect() {

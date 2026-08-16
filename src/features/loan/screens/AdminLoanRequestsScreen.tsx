@@ -12,7 +12,7 @@ const columns: ColumnDef<LoanRequest, unknown>[] = [
     cell: ({ row }) => (
       <Link
         to={`/admin/loan-requests/${row.original.id}`}
-        className="font-medium text-indigo-700 hover:underline"
+        className="font-medium text-indigo-700 hover:underline dark:text-indigo-400"
       >
         {row.original.memberName}
       </Link>

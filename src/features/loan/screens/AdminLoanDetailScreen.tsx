@@ -34,7 +34,7 @@ export function AdminLoanDetailScreen() {
             <CardTitle>Principal</CardTitle>
           </CardHeader>
           <CardContent>
-            <Money amount={loan.principal} className="text-2xl font-semibold text-slate-900" />
+            <Money amount={loan.principal} className="text-2xl font-semibold text-slate-900 dark:text-slate-100" />
           </CardContent>
         </Card>
         <Card>
@@ -44,14 +44,16 @@ export function AdminLoanDetailScreen() {
           <CardContent>
             <Money
               amount={loan.outstandingBalance}
-              className="text-2xl font-semibold text-slate-900"
+              className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
             />
           </CardContent>
         </Card>
       </div>
 
       <div className="mb-6">
-        <h2 className="mb-3 text-sm font-semibold text-slate-900">Repayment schedule</h2>
+        <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-100">
+          Repayment schedule
+        </h2>
         <InstallmentSchedule installments={loan.installments} />
       </div>
 
@@ -70,7 +72,7 @@ export function AdminLoanDetailScreen() {
             <CardTitle>Guarantor liabilities</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Liability breakdown is coming in Phase 2, once the default sweep job is live.
             </p>
           </CardContent>

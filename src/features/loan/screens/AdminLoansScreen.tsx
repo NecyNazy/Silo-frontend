@@ -13,7 +13,7 @@ const columns: ColumnDef<Loan, unknown>[] = [
     cell: ({ row }) => (
       <Link
         to={`/admin/loans/${row.original.id}`}
-        className="font-medium text-indigo-700 hover:underline"
+        className="font-medium text-indigo-700 hover:underline dark:text-indigo-400"
       >
         {row.original.memberName}
       </Link>
@@ -65,8 +65,8 @@ export function AdminLoansScreen() {
             onClick={() => setStatusFilter(filter.value)}
             className={
               filter.value === statusFilter
-                ? 'rounded-full bg-indigo-700 px-3 py-1 text-xs font-medium text-white'
-                : 'rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-200'
+                ? 'rounded-full bg-indigo-700 px-3 py-1 text-xs font-medium text-white dark:bg-indigo-600'
+                : 'rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'
             }
           >
             {filter.label}

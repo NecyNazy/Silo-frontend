@@ -47,7 +47,7 @@ export function RejectRequestDialog({ requestId }: { requestId: string }) {
             <Label htmlFor="reason">Reason</Label>
             <Input id="reason" {...register('reason')} />
             {errors.reason && (
-              <p role="alert" className="text-xs text-red-600">
+              <p role="alert" className="text-xs text-red-600 dark:text-red-400">
                 {errors.reason.message}
               </p>
             )}

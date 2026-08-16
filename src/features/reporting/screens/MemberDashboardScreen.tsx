@@ -26,7 +26,10 @@ export function MemberDashboardScreen() {
             <CardTitle>Total contributed</CardTitle>
           </CardHeader>
           <CardContent>
-            <Money amount={summary?.totalContributed ?? 0} className="text-2xl font-semibold text-slate-900" />
+            <Money
+              amount={summary?.totalContributed ?? 0}
+              className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
+            />
           </CardContent>
         </Card>
 
@@ -36,11 +39,14 @@ export function MemberDashboardScreen() {
           </CardHeader>
           <CardContent>
             {activeLoan ? (
-              <Link to={`/loans/${activeLoan.id}`} className="text-indigo-700 hover:underline">
+              <Link
+                to={`/loans/${activeLoan.id}`}
+                className="text-indigo-700 hover:underline dark:text-indigo-400"
+              >
                 <Money amount={activeLoan.outstandingBalance} className="text-2xl font-semibold" />
               </Link>
             ) : (
-              <p className="text-sm text-slate-500">None</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">None</p>
             )}
           </CardContent>
         </Card>
@@ -52,11 +58,16 @@ export function MemberDashboardScreen() {
           <CardContent>
             {nextInstallment ? (
               <>
-                <Money amount={nextInstallment.amountDue} className="text-lg font-semibold text-slate-900" />
-                <p className="text-xs text-slate-500">Due {formatDate(nextInstallment.dueDate)}</p>
+                <Money
+                  amount={nextInstallment.amountDue}
+                  className="text-lg font-semibold text-slate-900 dark:text-slate-100"
+                />
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Due {formatDate(nextInstallment.dueDate)}
+                </p>
               </>
             ) : (
-              <p className="text-sm text-slate-500">Nothing due</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Nothing due</p>
             )}
           </CardContent>
         </Card>
@@ -66,7 +77,10 @@ export function MemberDashboardScreen() {
             <CardTitle>Unread notifications</CardTitle>
           </CardHeader>
           <CardContent>
-            <Link to="/notifications" className="text-2xl font-semibold text-slate-900 hover:text-indigo-700">
+            <Link
+              to="/notifications"
+              className="text-2xl font-semibold text-slate-900 hover:text-indigo-700 dark:text-slate-100 dark:hover:text-indigo-400"
+            >
               {unreadCount}
             </Link>
           </CardContent>
@@ -74,8 +88,9 @@ export function MemberDashboardScreen() {
       </div>
 
       {member && (
-        <div className="mt-6 flex items-center gap-2 text-sm text-slate-500">
-          Account status: <StatusBadge status={member.status} /> KYC: <StatusBadge status={member.kycStatus} />
+        <div className="mt-6 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+          Account status: <StatusBadge status={member.status} /> KYC:{' '}
+          <StatusBadge status={member.kycStatus} />
         </div>
       )}
     </div>

@@ -25,8 +25,11 @@ export function ProfileScreen() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-500">
-                Credit score: <span className="font-medium text-slate-900">{member.creditScore}</span>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Credit score:{' '}
+                <span className="font-medium text-slate-900 dark:text-slate-100">
+                  {member.creditScore}
+                </span>
               </p>
             </CardContent>
           </Card>

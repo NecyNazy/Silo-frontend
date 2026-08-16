@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
 }
@@ -7,9 +9,17 @@
 body {
   margin: 0;
   color-scheme: light;
+  background-color: #f8fafc;
+  color: #0f172a;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.dark body {
+  color-scheme: dark;
+  background-color: #020617;
+  color: #f1f5f9;
 }
 
 #root {

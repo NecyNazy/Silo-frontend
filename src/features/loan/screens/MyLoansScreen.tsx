@@ -36,7 +36,10 @@ const columns: ColumnDef<Row, unknown>[] = [
     id: 'actions',
     header: '',
     cell: ({ row }) => (
-      <Link to={`/loans/${row.original.id}`} className="text-sm font-medium text-indigo-700 hover:underline">
+      <Link
+        to={`/loans/${row.original.id}`}
+        className="text-sm font-medium text-indigo-700 hover:underline dark:text-indigo-400"
+      >
         View
       </Link>
     ),

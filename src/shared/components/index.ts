@@ -9,6 +9,7 @@ export * from './ErrorState';
 export * from './Skeleton';
 export * from './PageHeader';
 export * from './FormAlert';
+export * from './ThemeToggle';
 export * from './Dialog';
 export * from './Tabs';
 export * from './Select';

@@ -27,7 +27,7 @@ export function RegisterForm() {
         <Label htmlFor="fullName">Full name</Label>
         <Input id="fullName" autoComplete="name" {...registerField('fullName')} />
         {errors.fullName && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {errors.fullName.message}
           </p>
         )}
@@ -37,7 +37,7 @@ export function RegisterForm() {
         <Label htmlFor="email">Email</Label>
         <Input id="email" type="email" autoComplete="email" {...registerField('email')} />
         {errors.email && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {errors.email.message}
           </p>
         )}
@@ -47,7 +47,7 @@ export function RegisterForm() {
         <Label htmlFor="phone">Phone</Label>
         <Input id="phone" type="tel" autoComplete="tel" {...registerField('phone')} />
         {errors.phone && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {errors.phone.message}
           </p>
         )}
@@ -62,7 +62,7 @@ export function RegisterForm() {
           {...registerField('password')}
         />
         {errors.password && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {errors.password.message}
           </p>
         )}

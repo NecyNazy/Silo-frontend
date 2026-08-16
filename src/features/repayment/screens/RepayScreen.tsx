@@ -28,7 +28,7 @@ export function RepayScreen() {
     <div>
       <PageHeader title="Make a repayment" description={`Loan ${loan.id}`} />
 
-      <p className="mb-4 text-sm text-slate-600">
+      <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
         Outstanding balance: <Money amount={loan.outstandingBalance} className="inline font-medium" />
       </p>
 
@@ -47,7 +47,7 @@ export function RepayScreen() {
           <Label htmlFor="amount">Amount (NGN)</Label>
           <Input id="amount" type="number" min={1} {...register('amount')} />
           {errors.amount && (
-            <p role="alert" className="text-xs text-red-600">
+            <p role="alert" className="text-xs text-red-600 dark:text-red-400">
               {errors.amount.message}
             </p>
           )}

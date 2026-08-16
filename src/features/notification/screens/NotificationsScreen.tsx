@@ -20,10 +20,14 @@ export function NotificationsScreen() {
           <Card key={notification.id} className={notification.read ? 'opacity-70' : ''}>
             <CardContent className="flex items-start justify-between gap-4 py-4">
               <div>
-                <p className="text-sm font-medium text-slate-900">{notification.title}</p>
-                <p className="mt-0.5 text-sm text-slate-500">{notification.message}</p>
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  {notification.title}
+                </p>
+                <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+                  {notification.message}
+                </p>
               </div>
-              <span className="shrink-0 text-xs text-slate-400">
+              <span className="shrink-0 text-xs text-slate-400 dark:text-slate-500">
                 {formatRelative(notification.createdAt)}
               </span>
             </CardContent>

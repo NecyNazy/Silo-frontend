@@ -28,7 +28,7 @@ export function ProfileForm({ member }: { member: Member }) {
         <Label htmlFor="fullName">Full name</Label>
         <Input id="fullName" {...register('fullName')} />
         {errors.fullName && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {errors.fullName.message}
           </p>
         )}
@@ -43,7 +43,7 @@ export function ProfileForm({ member }: { member: Member }) {
         <Label htmlFor="phone">Phone</Label>
         <Input id="phone" {...register('phone')} />
         {errors.phone && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {errors.phone.message}
           </p>
         )}
@@ -53,7 +53,7 @@ export function ProfileForm({ member }: { member: Member }) {
         Save changes
       </Button>
       {updateMutation.isSuccess && (
-        <p className="text-sm text-emerald-700">Profile updated.</p>
+        <p className="text-sm text-emerald-700 dark:text-emerald-400">Profile updated.</p>
       )}
     </form>
   );

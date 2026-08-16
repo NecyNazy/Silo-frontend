@@ -51,7 +51,7 @@ export function ContributionsScreen() {
           <CardContent>
             <Money
               amount={summary?.totalContributed ?? 0}
-              className="text-2xl font-semibold text-slate-900"
+              className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
             />
           </CardContent>
         </Card>
@@ -64,7 +64,7 @@ export function ContributionsScreen() {
             {member && member.status === 'ACTIVE' && member.kycStatus === 'VERIFIED' ? (
               <ContributionCta email={member.email} />
             ) : (
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 Contributions unlock once your KYC is verified and your account is active.
               </p>
             )}

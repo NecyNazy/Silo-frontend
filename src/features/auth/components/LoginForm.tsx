@@ -25,7 +25,7 @@ export function LoginForm() {
         <Label htmlFor="email">Email</Label>
         <Input id="email" type="email" autoComplete="email" {...register('email')} />
         {errors.email && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {errors.email.message}
           </p>
         )}
@@ -40,7 +40,7 @@ export function LoginForm() {
           {...register('password')}
         />
         {errors.password && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {errors.password.message}
           </p>
         )}

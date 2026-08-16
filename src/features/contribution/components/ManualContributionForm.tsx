@@ -63,7 +63,7 @@ export function ManualContributionForm() {
           )}
         />
         {errors.memberId && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {errors.memberId.message}
           </p>
         )}
@@ -73,7 +73,7 @@ export function ManualContributionForm() {
         <Label htmlFor="amount">Amount (NGN)</Label>
         <Input id="amount" type="number" min={1} className="max-w-xs" {...register('amount')} />
         {errors.amount && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {errors.amount.message}
           </p>
         )}
@@ -87,7 +87,9 @@ export function ManualContributionForm() {
       <Button type="submit" isLoading={mutation.isPending}>
         Record contribution
       </Button>
-      {mutation.isSuccess && <p className="text-sm text-emerald-700">Contribution recorded.</p>}
+      {mutation.isSuccess && (
+        <p className="text-sm text-emerald-700 dark:text-emerald-400">Contribution recorded.</p>
+      )}
     </form>
   );
 }

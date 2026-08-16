@@ -35,7 +35,7 @@ export function OfficerDashboardScreen() {
             <CardTitle>Active loans</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold text-slate-900">{metrics.activeLoans}</p>
+            <p className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{metrics.activeLoans}</p>
           </CardContent>
         </Card>
         <Card>
@@ -43,7 +43,7 @@ export function OfficerDashboardScreen() {
             <CardTitle>Total contributions</CardTitle>
           </CardHeader>
           <CardContent>
-            <Money amount={metrics.totalContributions} className="text-2xl font-semibold text-slate-900" />
+            <Money amount={metrics.totalContributions} className="text-2xl font-semibold text-slate-900 dark:text-slate-100" />
           </CardContent>
         </Card>
         <Card>
@@ -51,7 +51,7 @@ export function OfficerDashboardScreen() {
             <CardTitle>Outstanding balance</CardTitle>
           </CardHeader>
           <CardContent>
-            <Money amount={metrics.outstandingBalance} className="text-2xl font-semibold text-slate-900" />
+            <Money amount={metrics.outstandingBalance} className="text-2xl font-semibold text-slate-900 dark:text-slate-100" />
           </CardContent>
         </Card>
         <Card>
@@ -59,7 +59,7 @@ export function OfficerDashboardScreen() {
             <CardTitle>Default rate</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-semibold text-slate-900">
+            <p className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
               {metrics.defaultRatePercent.toFixed(1)}%
             </p>
           </CardContent>

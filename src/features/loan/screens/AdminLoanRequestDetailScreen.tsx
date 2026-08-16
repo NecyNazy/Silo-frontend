@@ -40,7 +40,7 @@ export function AdminLoanRequestDetailScreen() {
           <CardHeader>
             <CardTitle>Request</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-slate-600">
+          <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
             <p>
               Amount: <Money amount={request.amount} className="inline" />
             </p>
@@ -53,7 +53,7 @@ export function AdminLoanRequestDetailScreen() {
           <CardHeader>
             <CardTitle>Risk & credibility</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-slate-600">
+          <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
             <p>Requester credit score: {member?.creditScore ?? '—'}</p>
             <p>KYC status: {member ? <StatusBadge status={member.kycStatus} /> : '—'}</p>
             <p>
@@ -61,7 +61,7 @@ export function AdminLoanRequestDetailScreen() {
               invited
             </p>
             {!canApprove && request.status === 'PENDING' && (
-              <p className="text-amber-700">
+              <p className="text-amber-700 dark:text-amber-400">
                 Needs at least one accepted guarantor before it can be approved.
               </p>
             )}

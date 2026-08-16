@@ -36,7 +36,7 @@ export function LoanApplyForm() {
         <Label htmlFor="amount">Amount (NGN)</Label>
         <Input id="amount" type="number" min={1} {...register('amount')} />
         {errors.amount && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {errors.amount.message}
           </p>
         )}
@@ -46,7 +46,7 @@ export function LoanApplyForm() {
         <Label htmlFor="termMonths">Term (months)</Label>
         <Input id="termMonths" type="number" min={1} {...register('termMonths')} />
         {errors.termMonths && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {errors.termMonths.message}
           </p>
         )}
@@ -56,7 +56,7 @@ export function LoanApplyForm() {
         <Label htmlFor="purpose">Purpose</Label>
         <Input id="purpose" {...register('purpose')} />
         {errors.purpose && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {errors.purpose.message}
           </p>
         )}

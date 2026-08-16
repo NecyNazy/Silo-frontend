@@ -37,7 +37,7 @@ export function LoanDetailScreen() {
               <CardTitle>Amount requested</CardTitle>
             </CardHeader>
             <CardContent>
-              <Money amount={request.amount} className="text-2xl font-semibold text-slate-900" />
+              <Money amount={request.amount} className="text-2xl font-semibold text-slate-900 dark:text-slate-100" />
             </CardContent>
           </Card>
           <Card>
@@ -55,7 +55,7 @@ export function LoanDetailScreen() {
           </Card>
         </div>
         {request.status === 'REJECTED' && request.rejectionReason && (
-          <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-800">
+          <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-800 dark:bg-red-950 dark:text-red-300">
             Rejected: {request.rejectionReason}
           </p>
         )}
@@ -78,7 +78,7 @@ export function LoanDetailScreen() {
             <CardTitle>Principal</CardTitle>
           </CardHeader>
           <CardContent>
-            <Money amount={loan.principal} className="text-2xl font-semibold text-slate-900" />
+            <Money amount={loan.principal} className="text-2xl font-semibold text-slate-900 dark:text-slate-100" />
           </CardContent>
         </Card>
         <Card>
@@ -91,13 +91,15 @@ export function LoanDetailScreen() {
             )}
           </CardHeader>
           <CardContent>
-            <Money amount={loan.outstandingBalance} className="text-2xl font-semibold text-slate-900" />
+            <Money amount={loan.outstandingBalance} className="text-2xl font-semibold text-slate-900 dark:text-slate-100" />
           </CardContent>
         </Card>
       </div>
 
       <div className="mb-6">
-        <h2 className="mb-3 text-sm font-semibold text-slate-900">Repayment schedule</h2>
+        <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-100">
+          Repayment schedule
+        </h2>
         <InstallmentSchedule installments={loan.installments} />
       </div>
 
