@@ -44,10 +44,7 @@ static hosting).
 - `npm run dev` — start the dev server (with the backend proxy)
 - `npm run build` — type-check and build for production
 - `npm run preview` — preview the production build. Empirically this
-  *also* applies `vite.config.ts`'s dev proxy (confirmed by `curl`ing it
-  directly), contrary to what was originally assumed here — see the §15
-  callout in the architecture doc before relying on it being isolated
-  from a live backend
+  *also* applies `vite.config.ts`'s dev proxy
 - `npm run lint` — ESLint
 - `npm run format` — Prettier
 - `npm test` / `npm run test:watch` — Vitest (unit + component)
