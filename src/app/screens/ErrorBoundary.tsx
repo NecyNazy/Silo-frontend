@@ -23,11 +23,9 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.error) {
       return (
-        <div className="flex min-h-svh flex-col items-center justify-center gap-3 px-4 text-center">
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-            Something went wrong
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+        <div className="flex min-h-svh flex-col items-center justify-center gap-3 bg-canvas px-4 text-center">
+          <h1 className="text-xl font-semibold text-text-primary">Something went wrong</h1>
+          <p className="text-sm text-text-muted">
             An unexpected error occurred. Try reloading the page.
           </p>
           <Button onClick={() => window.location.reload()}>Reload</Button>

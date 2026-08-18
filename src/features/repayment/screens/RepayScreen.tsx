@@ -34,7 +34,7 @@ function RepayForm({ loanId, outstandingBalance }: { loanId: string; outstanding
     <div>
       <PageHeader title="Make a repayment" description={`Loan ${loanId}`} />
 
-      <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
+      <p className="mb-4 text-sm text-text-secondary">
         Outstanding balance: <Money amount={outstandingBalance} className="inline font-medium" />
       </p>
 
@@ -54,7 +54,7 @@ function RepayForm({ loanId, outstandingBalance }: { loanId: string; outstanding
           <Label htmlFor="amount">Amount (NGN)</Label>
           <Input id="amount" type="number" min={1} max={outstandingBalance} {...register('amount')} />
           {errors.amount && (
-            <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+            <p role="alert" className="text-xs text-danger">
               {errors.amount.message}
             </p>
           )}
@@ -64,7 +64,7 @@ function RepayForm({ loanId, outstandingBalance }: { loanId: string; outstanding
           <Label htmlFor="reference">Reference</Label>
           <Input id="reference" {...register('reference')} />
           {errors.reference && (
-            <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+            <p role="alert" className="text-xs text-danger">
               {errors.reference.message}
             </p>
           )}

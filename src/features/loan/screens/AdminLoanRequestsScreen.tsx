@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table';
+import { ClipboardCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '@/features/auth/store';
 import { DataTable, ErrorState, Money, PageHeader, StatusBadge } from '@/shared/components';
@@ -13,7 +14,7 @@ const columns: ColumnDef<LoanRequest, unknown>[] = [
     cell: ({ row }) => (
       <Link
         to={`/admin/loan-requests/${row.original.id}`}
-        className="font-medium text-indigo-700 hover:underline dark:text-indigo-400"
+        className="font-medium text-accent hover:underline"
       >
         {row.original.memberId}
       </Link>
@@ -45,7 +46,7 @@ export function AdminLoanRequestsScreen() {
   return (
     <div>
       <PageHeader title="Loan requests" description="Pending-approval queue." />
-      <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+      <p className="mb-4 rounded-control bg-warning-muted px-3 py-2 text-xs text-warning">
         The backend doesn't expose a loan-request list endpoint yet. This queue is backed by
         seed data until that lands.
       </p>
@@ -57,6 +58,8 @@ export function AdminLoanRequestsScreen() {
           data={requests ?? []}
           isLoading={isLoading}
           emptyTitle="No pending loan requests"
+          emptyDescription="Requests awaiting review will appear in this queue."
+          emptyIcon={ClipboardCheck}
           searchPlaceholder="Search requests…"
         />
       )}

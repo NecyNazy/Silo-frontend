@@ -1,12 +1,13 @@
+import { motion } from 'motion/react';
 import { cn } from '../lib/cn';
 import { statusTone, type StatusTone } from '../lib/status';
 
 const TONE_CLASSES: Record<StatusTone, string> = {
-  success: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-950 dark:text-emerald-300 dark:ring-emerald-500/30',
-  warning: 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-950 dark:text-amber-300 dark:ring-amber-500/30',
-  danger: 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-950 dark:text-red-300 dark:ring-red-500/30',
-  neutral: 'bg-slate-100 text-slate-600 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-400/20',
-  info: 'bg-sky-50 text-sky-700 ring-sky-600/20 dark:bg-sky-950 dark:text-sky-300 dark:ring-sky-500/30',
+  success: 'bg-success-muted text-success ring-success/25',
+  warning: 'bg-warning-muted text-warning ring-warning/25',
+  danger: 'bg-danger-muted text-danger ring-danger/25',
+  neutral: 'bg-surface-raised text-text-secondary ring-border-strong',
+  info: 'bg-info-muted text-info ring-info/25',
 };
 
 export interface StatusBadgeProps {
@@ -17,7 +18,11 @@ export interface StatusBadgeProps {
 export function StatusBadge({ status, className }: StatusBadgeProps) {
   const tone = statusTone(status);
   return (
-    <span
+    <motion.span
+      key={status}
+      initial={{ opacity: 0, scale: 0.85 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
       className={cn(
         'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset',
         TONE_CLASSES[tone],
@@ -25,6 +30,6 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
       )}
     >
       {status.charAt(0) + status.slice(1).toLowerCase().replace(/_/g, ' ')}
-    </span>
+    </motion.span>
   );
 }

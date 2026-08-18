@@ -39,7 +39,7 @@ export function LoanDetailScreen() {
             <CardContent>
               <Money
                 amount={request.amountRequested}
-                className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
+                className="text-2xl font-semibold text-text-primary"
               />
             </CardContent>
           </Card>
@@ -83,7 +83,7 @@ function LoanDetailBody({ loan }: { loan: LoanDetail }) {
           <CardContent>
             <Money
               amount={loan.principalAmount}
-              className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
+              className="text-2xl font-semibold text-text-primary"
             />
           </CardContent>
         </Card>
@@ -99,14 +99,14 @@ function LoanDetailBody({ loan }: { loan: LoanDetail }) {
           <CardContent>
             <Money
               amount={loan.outstandingBalance}
-              className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
+              className="text-2xl font-semibold text-text-primary"
             />
           </CardContent>
         </Card>
       </div>
 
       <div className="mb-6">
-        <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="mb-3 text-sm font-semibold text-text-primary">
           Repayment schedule
         </h2>
         <InstallmentSchedule installments={loan.installments} />
@@ -120,7 +120,7 @@ function LoanDetailBody({ loan }: { loan: LoanDetail }) {
           {requestResult.data ? (
             <GuarantorList guarantors={requestResult.data.guarantors} />
           ) : (
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-text-muted">
               Guarantor info isn't available for this loan.
             </p>
           )}

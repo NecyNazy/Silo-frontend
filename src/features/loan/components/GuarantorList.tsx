@@ -4,16 +4,16 @@ import type { LoanGuarantor } from '@/shared/types/loan';
 
 export function GuarantorList({ guarantors }: { guarantors: LoanGuarantor[] }) {
   if (guarantors.length === 0) {
-    return <p className="text-sm text-slate-500 dark:text-slate-400">No guarantors added yet.</p>;
+    return <p className="text-sm text-text-muted">No guarantors added yet.</p>;
   }
 
   return (
-    <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+    <ul className="divide-y divide-border-subtle">
       {guarantors.map((g) => (
         <li key={g.id} className="flex items-center justify-between py-2 text-sm">
           <div>
-            <p className="font-medium text-slate-900 dark:text-slate-100">{g.memberId}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="font-medium text-text-primary">{g.memberId}</p>
+            <p className="text-xs text-text-muted">
               Invited {formatDate(g.invitedAt)}
             </p>
           </div>

@@ -7,6 +7,7 @@ import {
   updateKycStatus,
   updateMemberProfile,
   updateMemberStatus,
+  uploadKycDocument,
   type ListMembersParams,
 } from './api';
 
@@ -58,6 +59,16 @@ export function useUpdateKycStatus(id: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['members', id] });
       queryClient.invalidateQueries({ queryKey: ['members', 'list'] });
+    },
+  });
+}
+
+export function useUploadKycDocument(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) => uploadKycDocument(id, file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['members', id] });
     },
   });
 }

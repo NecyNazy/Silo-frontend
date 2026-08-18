@@ -68,7 +68,7 @@ export function ManualContributionForm() {
           )}
         />
         {errors.memberId && (
-          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+          <p role="alert" className="text-xs text-danger">
             {errors.memberId.message}
           </p>
         )}
@@ -78,7 +78,7 @@ export function ManualContributionForm() {
         <Label htmlFor="amount">Amount (NGN)</Label>
         <Input id="amount" type="number" min={1} className="max-w-xs" {...register('amount')} />
         {errors.amount && (
-          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+          <p role="alert" className="text-xs text-danger">
             {errors.amount.message}
           </p>
         )}
@@ -88,7 +88,7 @@ export function ManualContributionForm() {
         <Label htmlFor="reference">Reference</Label>
         <Input id="reference" className="max-w-sm" {...register('reference')} />
         {errors.reference && (
-          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+          <p role="alert" className="text-xs text-danger">
             {errors.reference.message}
           </p>
         )}
@@ -98,7 +98,7 @@ export function ManualContributionForm() {
         Record contribution
       </Button>
       {mutation.isSuccess && (
-        <p className="text-sm text-emerald-700 dark:text-emerald-400">Contribution recorded.</p>
+        <p className="text-sm text-success">Contribution recorded.</p>
       )}
     </form>
   );

@@ -1,3 +1,5 @@
+import { motion } from 'motion/react';
+
 export interface FormAlertProps {
   message?: string | null;
 }
@@ -6,12 +8,15 @@ export function FormAlert({ message }: FormAlertProps) {
   if (!message) return null;
 
   return (
-    <div
+    <motion.div
       role="alert"
       aria-live="assertive"
-      className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
+      initial={{ opacity: 0, y: -6, height: 0 }}
+      animate={{ opacity: 1, y: 0, height: 'auto' }}
+      transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+      className="rounded-control border border-danger/25 bg-danger-muted px-3 py-2 text-sm text-danger"
     >
       {message}
-    </div>
+    </motion.div>
   );
 }

@@ -1,13 +1,34 @@
+import { motion } from 'motion/react';
 import type { HTMLAttributes } from 'react';
 import { cn } from '../lib/cn';
 
-export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+type NativeDivProps = Omit<
+  HTMLAttributes<HTMLDivElement>,
+  'onDrag' | 'onDragStart' | 'onDragEnd' | 'onAnimationStart' | 'onAnimationEnd' | 'onAnimationIteration'
+>;
+
+export interface CardProps extends NativeDivProps {
+  interactive?: boolean;
+}
+
+export function Card({ className, interactive, ...props }: CardProps) {
+  if (interactive) {
+    return (
+      <motion.div
+        whileHover={{ y: -3 }}
+        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+        className={cn(
+          'rounded-card border border-border-subtle bg-surface shadow-card transition-shadow hover:border-border-strong hover:shadow-raised',
+          className,
+        )}
+        {...props}
+      />
+    );
+  }
+
   return (
     <div
-      className={cn(
-        'rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900',
-        className,
-      )}
+      className={cn('rounded-card border border-border-subtle bg-surface shadow-card', className)}
       {...props}
     />
   );
@@ -18,16 +39,11 @@ export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElemen
 }
 
 export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return (
-    <h3
-      className={cn('text-base font-semibold text-slate-900 dark:text-slate-100', className)}
-      {...props}
-    />
-  );
+  return <h3 className={cn('text-base font-semibold text-text-primary', className)} {...props} />;
 }
 
 export function CardDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn('text-sm text-slate-500 dark:text-slate-400', className)} {...props} />;
+  return <p className={cn('text-sm text-text-muted', className)} {...props} />;
 }
 
 export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {

@@ -39,7 +39,7 @@ export function AdminLoanRequestDetailScreen() {
           <CardHeader>
             <CardTitle>Request</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+          <CardContent className="space-y-2 text-sm text-text-secondary">
             <p>
               Amount: <Money amount={request.amountRequested} className="inline" />
             </p>
@@ -52,7 +52,7 @@ export function AdminLoanRequestDetailScreen() {
           <CardHeader>
             <CardTitle>Risk & credibility</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+          <CardContent className="space-y-2 text-sm text-text-secondary">
             <p>KYC status: {member ? <StatusBadge status={member.kycStatus} /> : 'Not available'}</p>
             <p>Account status: {member ? <StatusBadge status={member.status} /> : 'Not available'}</p>
             <p>
@@ -60,12 +60,12 @@ export function AdminLoanRequestDetailScreen() {
               invited
             </p>
             {isOwnRequest && request.status === 'PENDING' && (
-              <p className="text-amber-700 dark:text-amber-400">
+              <p className="text-warning">
                 This is your own request. Another officer needs to approve or reject it.
               </p>
             )}
             {!isOwnRequest && !canApprove && request.status === 'PENDING' && (
-              <p className="text-amber-700 dark:text-amber-400">
+              <p className="text-warning">
                 Needs at least one accepted guarantor before it can be approved.
               </p>
             )}

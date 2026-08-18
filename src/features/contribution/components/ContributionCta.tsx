@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
+import { CreditCard } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useAuthStore } from '@/features/auth/store';
 import { usePaystackCheckout } from '@/features/paymentgateway/usePaystackCheckout';
@@ -54,16 +55,23 @@ export function ContributionCta({ email }: { email: string }) {
 
   if (!isConfigured) {
     return (
-      <p className="text-sm text-slate-500 dark:text-slate-400">
-        Paystack isn't configured in this environment. Contributions can still be recorded
-        manually by an officer.
-      </p>
+      <div className="flex items-start gap-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-warning-muted text-warning">
+          <CreditCard className="h-4 w-4" aria-hidden="true" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-text-primary">Card payment not set up</p>
+          <p className="mt-0.5 text-sm text-text-muted">
+            Ask an officer to record this contribution manually until card payments are enabled.
+          </p>
+        </div>
+      </div>
     );
   }
 
   if (phase === 'confirming') {
     return (
-      <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+      <p className="text-sm font-medium text-warning">
         Confirming your contribution…
       </p>
     );
@@ -71,7 +79,7 @@ export function ContributionCta({ email }: { email: string }) {
 
   if (phase === 'confirmed') {
     return (
-      <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+      <p className="text-sm font-medium text-success">
         Contribution confirmed.
       </p>
     );
@@ -79,7 +87,7 @@ export function ContributionCta({ email }: { email: string }) {
 
   if (phase === 'timeout') {
     return (
-      <p className="text-sm text-slate-600 dark:text-slate-400">
+      <p className="text-sm text-text-secondary">
         We'll notify you once this is confirmed. Check your notifications shortly.
       </p>
     );

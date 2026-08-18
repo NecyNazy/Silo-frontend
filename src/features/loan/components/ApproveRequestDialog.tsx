@@ -66,7 +66,7 @@ export function ApproveRequestDialog({
             <Label htmlFor="interestRate">Interest rate (%)</Label>
             <Input id="interestRate" type="number" min={0} step="0.1" {...register('interestRate')} />
             {errors.interestRate && (
-              <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+              <p role="alert" className="text-xs text-danger">
                 {errors.interestRate.message}
               </p>
             )}
@@ -76,7 +76,7 @@ export function ApproveRequestDialog({
             <Label htmlFor="durationMonths">Duration (months)</Label>
             <Input id="durationMonths" type="number" min={1} {...register('durationMonths')} />
             {errors.durationMonths && (
-              <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+              <p role="alert" className="text-xs text-danger">
                 {errors.durationMonths.message}
               </p>
             )}

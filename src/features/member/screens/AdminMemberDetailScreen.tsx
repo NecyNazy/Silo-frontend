@@ -41,7 +41,7 @@ export function AdminMemberDetailScreen() {
       <PageHeader title={member.fullName} description={member.email} />
 
       {isOwnProfile && (
-        <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+        <p className="mb-4 rounded-control bg-warning-muted px-3 py-2 text-sm text-warning">
           This is your own profile. Another officer needs to change your KYC or account status.
         </p>
       )}
@@ -53,15 +53,15 @@ export function AdminMemberDetailScreen() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-500 dark:text-slate-400">Current status:</span>
+              <span className="text-sm text-text-muted">Current status:</span>
               <StatusBadge status={member.kycStatus} />
             </div>
             {member.idDocumentRef ? (
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <p className="text-sm text-text-muted">
                 ID document on file: {member.idDocumentRef}
               </p>
             ) : (
-              <p className="text-sm text-amber-700 dark:text-amber-400">
+              <p className="text-sm text-warning">
                 No ID document uploaded yet.
               </p>
             )}
@@ -94,7 +94,7 @@ export function AdminMemberDetailScreen() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-500 dark:text-slate-400">Current status:</span>
+              <span className="text-sm text-text-muted">Current status:</span>
               <StatusBadge status={member.status} />
             </div>
             <FormAlert
@@ -123,7 +123,7 @@ export function AdminMemberDetailScreen() {
           <CardHeader>
             <CardTitle>Profile</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+          <CardContent className="space-y-2 text-sm text-text-secondary">
             <p>Phone: {member.phoneNumber}</p>
             {member.idType && (
               <p>

@@ -1,5 +1,6 @@
 import { apiClient } from '@/shared/api/client';
 import type {
+  KycDocumentUploadResponse,
   KycStatus,
   Member,
   MemberStatus,
@@ -36,5 +37,18 @@ export async function updateMemberStatus(id: string, status: MemberStatus): Prom
 
 export async function updateKycStatus(id: string, kycStatus: KycStatus): Promise<Member> {
   const { data } = await apiClient.patch<Member>(`/members/${id}/kyc`, { kycStatus });
+  return data;
+}
+
+export async function uploadKycDocument(
+  id: string,
+  file: File,
+): Promise<KycDocumentUploadResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const { data } = await apiClient.post<KycDocumentUploadResponse>(
+    `/members/${id}/kyc-document`,
+    formData,
+  );
   return data;
 }

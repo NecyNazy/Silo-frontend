@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table';
+import { Users } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '@/features/auth/store';
@@ -14,7 +15,7 @@ const columns: ColumnDef<Member, unknown>[] = [
     cell: ({ row }) => (
       <Link
         to={`/admin/members/${row.original.id}`}
-        className="font-medium text-indigo-700 hover:underline dark:text-indigo-400"
+        className="font-medium text-accent hover:underline"
       >
         {row.original.fullName}
       </Link>
@@ -57,7 +58,7 @@ export function AdminMembersScreen() {
     <div>
       <PageHeader title="Members" description="Member directory and KYC review queue." />
 
-      <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+      <p className="mb-4 rounded-control bg-warning-muted px-3 py-2 text-xs text-warning">
         The backend doesn't expose a member list endpoint yet. This table is backed by seed data
         until that lands.
       </p>
@@ -81,6 +82,8 @@ export function AdminMembersScreen() {
           data={members ?? []}
           isLoading={isLoading}
           emptyTitle="No members found"
+          emptyDescription="Try a different filter, or check back once new members join."
+          emptyIcon={Users}
           searchPlaceholder="Search members…"
         />
       )}
