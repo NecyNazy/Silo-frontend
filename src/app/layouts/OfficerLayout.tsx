@@ -1,0 +1,91 @@
+import {
+  BarChart3,
+  BookOpen,
+  LayoutDashboard,
+  LogOut,
+  PiggyBank,
+  UserCog,
+  Users,
+  Wallet,
+} from 'lucide-react';
+import { motion } from 'motion/react';
+import { NavLink, Outlet } from 'react-router-dom';
+import { useAuth } from '@/features/auth/hooks';
+import { NotificationBell, ThemeToggle } from '@/shared/components';
+import { cn } from '@/shared/lib/cn';
+
+const NAV_ITEMS = [
+  { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/admin/members', label: 'Members', icon: Users },
+  { to: '/admin/loan-requests', label: 'Loan Requests', icon: Wallet },
+  { to: '/admin/loans', label: 'Loans', icon: BookOpen },
+  { to: '/admin/contributions', label: 'Contributions', icon: PiggyBank },
+  { to: '/admin/officer-applications', label: 'Officer applications', icon: UserCog },
+  { to: '/admin/ledger', label: 'Ledger', icon: BarChart3 },
+  { to: '/admin/reports', label: 'Reports', icon: BarChart3 },
+];
+
+export function OfficerLayout() {
+  const { logout } = useAuth();
+
+  return (
+    <div className="flex min-h-svh bg-canvas">
+      <aside className="sticky top-0 hidden h-svh w-64 shrink-0 flex-col overflow-y-auto border-r border-border-subtle bg-surface/60 backdrop-blur-lg md:flex">
+        <div className="flex items-center justify-between px-5 py-5">
+          <div>
+            <span className="text-lg font-semibold tracking-tight text-text-primary">
+              Silo<span className="text-accent">.</span>
+            </span>
+            <p className="text-xs text-text-muted">Officer console</p>
+          </div>
+          <div className="flex items-center gap-1">
+            <NotificationBell />
+            <ThemeToggle />
+          </div>
+        </div>
+        <nav className="relative flex flex-1 flex-col gap-0.5 px-3">
+          {NAV_ITEMS.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                cn(
+                  'relative flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary',
+                  isActive && 'text-accent',
+                )
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  {isActive && (
+                    <motion.span
+                      layoutId="officer-nav-active"
+                      className="absolute inset-0 rounded-control bg-accent-muted"
+                      transition={{ type: 'spring', stiffness: 500, damping: 40 }}
+                    />
+                  )}
+                  <item.icon className="relative z-10 h-4 w-4" />
+                  <span className="relative z-10">{item.label}</span>
+                </>
+              )}
+            </NavLink>
+          ))}
+        </nav>
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          onClick={logout}
+          className="mx-3 mb-4 flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-medium text-text-muted transition-colors hover:bg-surface-raised hover:text-text-primary"
+        >
+          <LogOut className="h-4 w-4" />
+          Sign out
+        </motion.button>
+      </aside>
+
+      <main className="flex-1 px-4 py-6 sm:px-8">
+        <div className="mx-auto w-full max-w-6xl">
+          <Outlet />
+        </div>
+      </main>
+    </div>
+  );
+}
