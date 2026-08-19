@@ -16,7 +16,7 @@ function notFound(path: string, message: string) {
  * Stands in for the handful of GET endpoints the real backend doesn't expose
  * yet: list members, list/get loan requests (and their guarantors, which
  * have no real endpoint at all), and list loans. Every other request is
- * bypassed and hits the real backend — see main.tsx / shared/api/client.ts.
+ * bypassed and hits the real backend, see main.tsx / shared/api/client.ts.
  */
 export const gapHandlers = [
   http.get('/api/members', ({ request }) => {

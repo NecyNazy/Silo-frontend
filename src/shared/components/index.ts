@@ -17,3 +17,4 @@ export * from './DropdownMenu';
 export * from './Table';
 export * from './DataTable';
 export * from './FilterPill';
+export * from './NotificationBell';

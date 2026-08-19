@@ -7,6 +7,7 @@ import { MemberLayout } from './layouts/MemberLayout';
 import { OfficerLayout } from './layouts/OfficerLayout';
 import { ComingSoonScreen } from './screens/ComingSoonScreen';
 import { ForbiddenScreen } from './screens/ForbiddenScreen';
+import { LandingScreen } from './screens/LandingScreen';
 import { NotFoundScreen } from './screens/NotFoundScreen';
 
 function lazyScreen<T extends Record<string, React.ComponentType>>(
@@ -30,17 +31,9 @@ const ProfileScreen = lazyScreen(
   () => import('@/features/member/screens/ProfileScreen'),
   'ProfileScreen',
 );
-const ContributionsScreen = lazyScreen(
-  () => import('@/features/contribution/screens/ContributionsScreen'),
-  'ContributionsScreen',
-);
 const MyLoansScreen = lazyScreen(
   () => import('@/features/loan/screens/MyLoansScreen'),
   'MyLoansScreen',
-);
-const LoanApplyScreen = lazyScreen(
-  () => import('@/features/loan/screens/LoanApplyScreen'),
-  'LoanApplyScreen',
 );
 const LoanDetailScreen = lazyScreen(
   () => import('@/features/loan/screens/LoanDetailScreen'),
@@ -53,10 +46,6 @@ const AddGuarantorScreen = lazyScreen(
 const RepayScreen = lazyScreen(
   () => import('@/features/repayment/screens/RepayScreen'),
   'RepayScreen',
-);
-const GuarantorInvitesScreen = lazyScreen(
-  () => import('@/features/loan/screens/GuarantorInvitesScreen'),
-  'GuarantorInvitesScreen',
 );
 const NotificationsScreen = lazyScreen(
   () => import('@/features/notification/screens/NotificationsScreen'),
@@ -95,16 +84,20 @@ const AdminContributionsScreen = lazyScreen(
   () => import('@/features/contribution/screens/AdminContributionsScreen'),
   'AdminContributionsScreen',
 );
+const AdminOfficerApplicationsScreen = lazyScreen(
+  () => import('@/features/officerApplication/screens/AdminOfficerApplicationsScreen'),
+  'AdminOfficerApplicationsScreen',
+);
 
 function RouteFallback() {
-  return <div className="p-8 text-sm text-slate-400 dark:text-slate-500">Loading…</div>;
+  return <div className="p-8 text-sm text-text-muted">Loading…</div>;
 }
 
-function HomeRedirect() {
+function HomeRoute() {
   const role = useAuthStore((s) => s.role);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!isAuthenticated) return <LandingScreen />;
   return <Navigate to={role === 'OFFICER' ? '/admin/dashboard' : '/dashboard'} replace />;
 }
 
@@ -112,7 +105,7 @@ export function AppRouter() {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        <Route path="/" element={<HomeRedirect />} />
+        <Route path="/" element={<HomeRoute />} />
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/register" element={<RegisterScreen />} />
 
@@ -125,13 +118,13 @@ export function AppRouter() {
         >
           <Route path="/dashboard" element={<MemberDashboardScreen />} />
           <Route path="/profile" element={<ProfileScreen />} />
-          <Route path="/contributions" element={<ContributionsScreen />} />
+          <Route path="/contributions" element={<Navigate to="/dashboard" replace />} />
           <Route path="/loans" element={<MyLoansScreen />} />
-          <Route path="/loans/apply" element={<LoanApplyScreen />} />
+          <Route path="/loans/apply" element={<Navigate to="/loans" replace />} />
           <Route path="/loans/:id" element={<LoanDetailScreen />} />
           <Route path="/loans/:id/guarantors/add" element={<AddGuarantorScreen />} />
           <Route path="/loans/:id/repay" element={<RepayScreen />} />
-          <Route path="/guarantor-invites" element={<GuarantorInvitesScreen />} />
+          <Route path="/guarantor-invites" element={<Navigate to="/loans" replace />} />
           <Route
             path="/guarantor-liabilities"
             element={<ComingSoonScreen title="Guarantor liabilities" />}
@@ -154,6 +147,7 @@ export function AppRouter() {
           <Route path="/admin/loans" element={<AdminLoansScreen />} />
           <Route path="/admin/loans/:id" element={<AdminLoanDetailScreen />} />
           <Route path="/admin/contributions" element={<AdminContributionsScreen />} />
+          <Route path="/admin/officer-applications" element={<AdminOfficerApplicationsScreen />} />
           <Route path="/admin/ledger" element={<ComingSoonScreen title="Ledger" />} />
           <Route path="/admin/reports" element={<ComingSoonScreen title="Reports" />} />
         </Route>

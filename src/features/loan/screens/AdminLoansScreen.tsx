@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table';
+import { Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { DataTable, ErrorState, FilterPill, Money, PageHeader, StatusBadge } from '@/shared/components';
@@ -13,7 +14,7 @@ const columns: ColumnDef<Loan, unknown>[] = [
     cell: ({ row }) => (
       <Link
         to={`/admin/loans/${row.original.id}`}
-        className="font-medium text-indigo-700 hover:underline dark:text-indigo-400"
+        className="font-medium text-accent hover:underline"
       >
         {row.original.memberId}
       </Link>
@@ -58,7 +59,7 @@ export function AdminLoansScreen() {
     <div>
       <PageHeader title="Loans" description="All loans, filterable by status." />
 
-      <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+      <p className="mb-4 rounded-control bg-warning-muted px-3 py-2 text-xs text-warning">
         The backend doesn't expose a loans list endpoint yet. This table is backed by seed data
         until that lands.
       </p>
@@ -83,6 +84,8 @@ export function AdminLoansScreen() {
           data={data ?? []}
           isLoading={isLoading}
           emptyTitle="No loans found"
+          emptyDescription="Approved loans and their repayment status will show up here."
+          emptyIcon={Wallet}
           searchPlaceholder="Search loans…"
         />
       )}

@@ -8,8 +8,9 @@ import {
   type ColumnDef,
   type SortingState,
 } from '@tanstack/react-table';
-import { ChevronLeft, ChevronRight, ChevronsUpDown } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown, Search } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useState, type ComponentType } from 'react';
 import { Button } from './Button';
 import { EmptyState } from './EmptyState';
 import { Input } from './Input';
@@ -22,6 +23,7 @@ export interface DataTableProps<TData> {
   isLoading?: boolean;
   emptyTitle?: string;
   emptyDescription?: string;
+  emptyIcon?: ComponentType<{ className?: string }>;
   searchPlaceholder?: string;
 }
 
@@ -31,6 +33,7 @@ export function DataTable<TData>({
   isLoading,
   emptyTitle = 'Nothing here yet',
   emptyDescription,
+  emptyIcon,
   searchPlaceholder = 'Search…',
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -54,51 +57,88 @@ export function DataTable<TData>({
   }
 
   if (data.length === 0) {
-    return <EmptyState title={emptyTitle} description={emptyDescription} />;
+    return <EmptyState title={emptyTitle} description={emptyDescription} icon={emptyIcon} />;
   }
+
+  const rows = table.getRowModel().rows;
 
   return (
     <div className="space-y-3">
-      <Input
-        value={globalFilter}
-        onChange={(e) => setGlobalFilter(e.target.value)}
-        placeholder={searchPlaceholder}
-        className="max-w-xs"
-      />
+      <div className="relative max-w-xs">
+        <Search
+          className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
+          aria-hidden="true"
+        />
+        <Input
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          placeholder={searchPlaceholder}
+          className="pl-9"
+        />
+      </div>
       <Table>
         <TableHead>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHeaderCell
-                  key={header.id}
-                  className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-                  onClick={header.column.getToggleSortingHandler()}
-                >
-                  <span className="inline-flex items-center gap-1">
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                    {header.column.getCanSort() && <ChevronsUpDown className="h-3 w-3" />}
-                  </span>
-                </TableHeaderCell>
-              ))}
+              {headerGroup.headers.map((header) => {
+                const sortDirection = header.column.getIsSorted();
+                return (
+                  <TableHeaderCell
+                    key={header.id}
+                    className={
+                      header.column.getCanSort()
+                        ? 'cursor-pointer select-none transition-colors hover:text-text-secondary'
+                        : ''
+                    }
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.column.getCanSort() &&
+                        (sortDirection === 'asc' ? (
+                          <ArrowUp className="h-3 w-3 text-accent" aria-hidden="true" />
+                        ) : sortDirection === 'desc' ? (
+                          <ArrowDown className="h-3 w-3 text-accent" aria-hidden="true" />
+                        ) : (
+                          <ChevronsUpDown className="h-3 w-3 opacity-50" aria-hidden="true" />
+                        ))}
+                    </span>
+                  </TableHeaderCell>
+                );
+              })}
             </TableRow>
           ))}
         </TableHead>
         <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
+          {rows.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length} className="px-4 py-10 text-center text-sm text-text-muted">
+                No results match "{globalFilter}".
+              </td>
+            </tr>
+          ) : (
+            rows.map((row, index) => (
+              <motion.tr
+                key={row.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2, delay: Math.min(index, 8) * 0.02 }}
+                className="transition-colors duration-150 hover:bg-surface-raised"
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </motion.tr>
+            ))
+          )}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+      <div className="flex items-center justify-between text-sm text-text-muted">
         <span>
-          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount() || 1}
+          {rows.length} of {data.length} {data.length === 1 ? 'row' : 'rows'}, page{' '}
+          {table.getState().pagination.pageIndex + 1} of {table.getPageCount() || 1}
         </span>
         <div className="flex gap-2">
           <Button

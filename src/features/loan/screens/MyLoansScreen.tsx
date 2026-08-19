@@ -1,9 +1,22 @@
 import type { ColumnDef } from '@tanstack/react-table';
+import { Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useMyProfile } from '@/features/member/hooks';
-import { Button, DataTable, ErrorState, Money, PageHeader, StatusBadge } from '@/shared/components';
+import {
+  DataTable,
+  ErrorState,
+  Money,
+  PageHeader,
+  StatusBadge,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/shared/components';
 import { formatDate } from '@/shared/lib/date';
-import { useMyLoanRequests, useMyLoans } from '../hooks';
+import { GuarantorInvitesList } from '../components/GuarantorInvitesList';
+import { LoanApplyDialog } from '../components/LoanApplyDialog';
+import { useGuarantorInvites, useMyLoanRequests, useMyLoans } from '../hooks';
 
 interface Row {
   id: string;
@@ -39,7 +52,7 @@ const columns: ColumnDef<Row, unknown>[] = [
     cell: ({ row }) => (
       <Link
         to={`/loans/${row.original.id}`}
-        className="text-sm font-medium text-indigo-700 hover:underline dark:text-indigo-400"
+        className="text-sm font-medium text-accent hover:underline"
       >
         View
       </Link>
@@ -61,6 +74,7 @@ export function MyLoansScreen() {
     isError: loansError,
     refetch: refetchLoans,
   } = useMyLoans();
+  const { data: invites } = useGuarantorInvites();
 
   const canApply = member?.status === 'ACTIVE' && member?.kycStatus === 'VERIFIED';
   const applyBlockedReason = !member
@@ -88,46 +102,60 @@ export function MyLoansScreen() {
     })),
   ];
 
+  const inviteCount = invites?.length ?? 0;
+
   return (
     <div>
       <PageHeader
-        title="My loans"
-        description="Requests you've submitted and loans you've been disbursed."
+        title="Loans"
+        description="Requests you've submitted, loans you've been disbursed, and guarantee invites."
         action={
-          canApply ? (
-            <Button asChild>
-              <Link to="/loans/apply">Apply for a loan</Link>
-            </Button>
-          ) : (
-            <Button disabled>Apply for a loan</Button>
-          )
+          <LoanApplyDialog disabled={!canApply} disabledReason={applyBlockedReason} />
         }
       />
       {applyBlockedReason && (
-        <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+        <p className="mb-4 rounded-control bg-warning-muted px-3 py-2 text-sm text-warning">
           {applyBlockedReason}
         </p>
       )}
-      <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+      <p className="mb-4 rounded-control bg-warning-muted px-3 py-2 text-xs text-warning">
         The backend doesn't expose list endpoints for loan requests or loans yet. This table is
         backed by seed data until that lands, so requests you submit for real won't appear here.
       </p>
-      {requestsError || loansError ? (
-        <ErrorState
-          onRetry={() => {
-            refetchRequests();
-            refetchLoans();
-          }}
-        />
-      ) : (
-        <DataTable
-          columns={columns}
-          data={rows}
-          isLoading={requestsLoading || loansLoading}
-          emptyTitle="No loans or requests yet"
-          searchPlaceholder="Search…"
-        />
-      )}
+
+      <Tabs defaultValue="loans">
+        <TabsList>
+          <TabsTrigger value="loans">My loans</TabsTrigger>
+          <TabsTrigger value="invites">
+            Guarantor invites{inviteCount > 0 ? ` (${inviteCount})` : ''}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="loans">
+          {requestsError || loansError ? (
+            <ErrorState
+              onRetry={() => {
+                refetchRequests();
+                refetchLoans();
+              }}
+            />
+          ) : (
+            <DataTable
+              columns={columns}
+              data={rows}
+              isLoading={requestsLoading || loansLoading}
+              emptyTitle="No loans or requests yet"
+              emptyDescription="Apply for a loan and it'll show up here alongside its status."
+              emptyIcon={Wallet}
+              searchPlaceholder="Search…"
+            />
+          )}
+        </TabsContent>
+
+        <TabsContent value="invites">
+          <GuarantorInvitesList />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

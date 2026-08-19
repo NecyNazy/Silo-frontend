@@ -1,30 +1,12 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Button,
-  FormAlert,
-  PageHeader,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/components';
-import { getErrorMessage } from '@/shared/lib/error';
-import { useAddGuarantor, useAvailableGuarantors } from '../hooks';
-import { addGuarantorSchema, type AddGuarantorFormValues } from '../schemas';
+import { useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { Button, PageHeader } from '@/shared/components';
+import type { LoanGuarantor } from '@/shared/types/loan';
+import { GuarantorPicker } from '../components/GuarantorPicker';
 
 export function AddGuarantorScreen() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const { data: candidates } = useAvailableGuarantors();
-  const mutation = useAddGuarantor(id as string);
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<AddGuarantorFormValues>({ resolver: zodResolver(addGuarantorSchema) });
+  const [invited, setInvited] = useState<LoanGuarantor[]>([]);
 
   return (
     <div>
@@ -33,42 +15,17 @@ export function AddGuarantorScreen() {
         description="Candidates are shown with their credit score so you can judge fit."
       />
 
-      <form
-        className="max-w-md space-y-4"
-        onSubmit={handleSubmit((values) =>
-          mutation.mutate(values, { onSuccess: () => navigate(`/loans/${id}`) }),
-        )}
-      >
-        <FormAlert message={mutation.isError ? getErrorMessage(mutation.error) : null} />
-
-        <Controller
-          control={control}
-          name="guarantorMemberId"
-          render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a guarantor" />
-              </SelectTrigger>
-              <SelectContent>
-                {candidates?.map((candidate) => (
-                  <SelectItem key={candidate.memberId} value={candidate.memberId}>
-                    {candidate.email}, credibility score {candidate.credibilityScore}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+      <div className="max-w-md space-y-4">
+        <GuarantorPicker
+          loanRequestId={id as string}
+          invited={invited}
+          onInvited={(guarantor) => setInvited((prev) => [...prev, guarantor])}
         />
-        {errors.guarantorMemberId && (
-          <p role="alert" className="text-xs text-red-600 dark:text-red-400">
-            {errors.guarantorMemberId.message}
-          </p>
-        )}
 
-        <Button type="submit" isLoading={mutation.isPending}>
-          Send invite
+        <Button asChild variant="outline">
+          <Link to={`/loans/${id}`}>Done</Link>
         </Button>
-      </form>
+      </div>
     </div>
   );
 }

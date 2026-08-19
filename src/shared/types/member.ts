@@ -21,11 +21,19 @@ export interface CreateMemberInput {
   phoneNumber: string;
 }
 
+export const ID_TYPES = ['National ID', 'Passport', "Driver's License"] as const;
+export type IdType = (typeof ID_TYPES)[number];
+
 export interface UpdateMemberProfileInput {
   fullName: string;
   phoneNumber: string;
   idType?: string;
   idNumber?: string;
+  /**
+   * Never user-typed. Passed through from the member's current value so a
+   * profile edit doesn't overwrite what POST /kyc-document set. See
+   * EditProfileDialog.
+   */
   idDocumentRef?: string;
 }
 
@@ -34,4 +42,15 @@ export interface RegisterMemberInput {
   email: string;
   phoneNumber: string;
   password: string;
+}
+
+export interface KycDocumentExtraction {
+  idType: IdType | null;
+  idNumber: string | null;
+  confidence: number;
+}
+
+export interface KycDocumentUploadResponse {
+  member: Member;
+  extracted: KycDocumentExtraction | null;
 }

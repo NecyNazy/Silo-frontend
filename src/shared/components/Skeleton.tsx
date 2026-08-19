@@ -4,7 +4,7 @@ import { cn } from '../lib/cn';
 export function Skeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('animate-pulse rounded-md bg-slate-200 dark:bg-slate-800', className)}
+      className={cn('animate-pulse rounded-control bg-surface-raised', className)}
       {...props}
     />
   );
@@ -12,7 +12,7 @@ export function Skeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>
 
 export function CardSkeleton() {
   return (
-    <div className="rounded-lg border border-slate-200 p-5 dark:border-slate-800">
+    <div className="rounded-card border border-border-subtle p-5">
       <Skeleton className="mb-3 h-4 w-1/3" />
       <Skeleton className="h-8 w-1/2" />
     </div>

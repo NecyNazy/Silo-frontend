@@ -34,7 +34,7 @@ export function AdminLoanDetailScreen() {
           <CardContent>
             <Money
               amount={loan.principalAmount}
-              className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
+              className="text-2xl font-semibold text-text-primary"
             />
           </CardContent>
         </Card>
@@ -45,14 +45,14 @@ export function AdminLoanDetailScreen() {
           <CardContent>
             <Money
               amount={loan.outstandingBalance}
-              className="text-2xl font-semibold text-slate-900 dark:text-slate-100"
+              className="text-2xl font-semibold text-text-primary"
             />
           </CardContent>
         </Card>
       </div>
 
       <div className="mb-6">
-        <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="mb-3 text-sm font-semibold text-text-primary">
           Repayment schedule
         </h2>
         <InstallmentSchedule installments={loan.installments} />
@@ -66,7 +66,7 @@ export function AdminLoanDetailScreen() {
           {requestResult.data ? (
             <GuarantorList guarantors={requestResult.data.guarantors} />
           ) : (
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-text-muted">
               Guarantor info isn't available for this loan.
             </p>
           )}
@@ -79,7 +79,7 @@ export function AdminLoanDetailScreen() {
             <CardTitle>Guarantor liabilities</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-text-muted">
               Liability breakdown is coming in Phase 2, once the default sweep job is live.
             </p>
           </CardContent>

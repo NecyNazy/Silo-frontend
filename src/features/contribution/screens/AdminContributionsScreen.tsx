@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table';
+import { PiggyBank } from 'lucide-react';
 import { useMembers } from '@/features/member/hooks';
 import {
   Card,
@@ -48,7 +49,7 @@ export function AdminContributionsScreen() {
     <div>
       <PageHeader title="Contributions" description="Record manual contributions and browse all." />
 
-      <p className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+      <p className="mb-4 rounded-control bg-warning-muted px-3 py-2 text-xs text-warning">
         The backend doesn't expose an all-contributions endpoint yet. This table is backed by
         seed data until that lands.
       </p>
@@ -70,6 +71,8 @@ export function AdminContributionsScreen() {
           data={data ?? []}
           isLoading={isLoading}
           emptyTitle="No contributions recorded"
+          emptyDescription="Contributions recorded manually or via Paystack will show up here."
+          emptyIcon={PiggyBank}
           searchPlaceholder="Search contributions…"
         />
       )}

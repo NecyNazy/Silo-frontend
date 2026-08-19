@@ -9,7 +9,7 @@ function envelope(data: unknown) {
 /**
  * The preview server this test runs against has no dev proxy to a real
  * backend, so the handful of real (non-gap-mocked) endpoints this golden
- * path touches are stubbed here directly — independent of both a live
+ * path touches are stubbed here directly, independent of both a live
  * backend and the MSW gap-fill handlers, which still run for everything else.
  */
 test('register then sign in lands on the member dashboard', async ({ page }) => {
