@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import { useMembers } from '@/features/member/hooks';
 import {
   Card,
   CardContent,
@@ -18,13 +19,19 @@ export function AdminLoanDetailScreen() {
   const { id } = useParams<{ id: string }>();
   const { data: loan, isLoading, isError, refetch } = useLoan(id);
   const requestResult = useLoanRequest(loan?.loanRequestId);
+  const { data: members } = useMembers();
+  const memberNames = new Map(members?.map((m) => [m.id, m.fullName]));
 
   if (isLoading) return <Skeleton className="h-64 w-full" />;
   if (isError || !loan) return <ErrorState onRetry={() => refetch()} />;
 
   return (
     <div>
-      <PageHeader title={`Loan ${loan.id}`} action={<StatusBadge status={loan.status} />} />
+      <PageHeader
+        title={memberNames.get(loan.memberId) ?? `Loan ${loan.id}`}
+        description={memberNames.has(loan.memberId) ? `Loan ${loan.id}` : undefined}
+        action={<StatusBadge status={loan.status} />}
+      />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
         <Card>
@@ -64,7 +71,7 @@ export function AdminLoanDetailScreen() {
         </CardHeader>
         <CardContent>
           {requestResult.data ? (
-            <GuarantorList guarantors={requestResult.data.guarantors} />
+            <GuarantorList guarantors={requestResult.data.guarantors} memberNames={memberNames} />
           ) : (
             <p className="text-sm text-text-muted">
               Guarantor info isn't available for this loan.

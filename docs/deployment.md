@@ -9,37 +9,19 @@
    VITE_API_BASE_URL=/api
    VITE_BACKEND_ORIGIN=http://localhost:8080
    VITE_PAYSTACK_PUBLIC_KEY=
-   VITE_ENABLE_MOCKS=true
    ```
 
 2. `npm run dev`. Requests to `/api/*` are same-origin from the browser's
    point of view, Vite's dev server proxies them server-side to
-   `VITE_BACKEND_ORIGIN` (see `vite.config.ts`). This is deliberate: the
-   backend doesn't currently send CORS headers, so a proxy sidesteps that
-   entirely instead of requiring a backend change.
-
-3. Leave `VITE_ENABLE_MOCKS=true`. MSW still runs, but only intercepts the
-   handful of endpoints the real backend doesn't expose yet (see
-   `tests/mocks/handlers/gaps.ts` and the amber banners in the UI on the
-   affected screens). Every other request passes through to the real API.
-   Set it to `false` only if you want those screens to fail honestly
-   instead of showing seed data.
+   `VITE_BACKEND_ORIGIN` (see `vite.config.ts`).
 
 ## What's real vs. mocked right now
 
-Confirmed against the backend's own `/v3/api-docs` (2026-08-16):
-
-| Works against the real backend | Still gap-filled by MSW |
-|---|---|
-| Auth (login, register, refresh), member profile/status/KYC, loan request submit/approve/reject/guarantors, guarantor accept/decline, contributions (record + per-member history/summary), repayments, single loan/member lookup, reports dashboard/summary | `GET /members` (list), `GET /loan-requests` (list + single), `GET /loans` (list), and reading a loan request's guarantors (no real endpoint returns them) |
-
-The gap-fill data lives in `tests/mocks/db.ts` and is **not connected to the
-real database**, a loan request submitted for real won't appear in the
-mocked officer queue, and vice versa. That's a backend gap, not a frontend
-bug; once the backend adds those list/detail endpoints, delete
-`tests/mocks/handlers/gaps.ts` and drop `VITE_ENABLE_MOCKS` (or set it
-`false`) and everything routes to the real API unchanged, since the mocked
-shapes already match the real response envelope.
+As of 2026-08-20 every screen talks to the real backend directly — no MSW,
+no gap-fill fixtures. The backend added the previously-missing list/detail
+endpoints (`GET /members`, `GET /loan-requests` list + detail with
+guarantors, `GET /loans`, `GET /contributions`), so the mock layer was
+removed entirely.
 
 ## Production
 

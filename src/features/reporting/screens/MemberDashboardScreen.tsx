@@ -70,7 +70,7 @@ export function MemberDashboardScreen() {
 
   if (memberLoading || (member && (summaryLoading || loansLoading))) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <CardSkeleton key={i} />
         ))}
@@ -98,10 +98,10 @@ export function MemberDashboardScreen() {
         initial="hidden"
         animate="show"
         variants={staggerChildren(0.08)}
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+        className="grid grid-cols-2 gap-4 lg:grid-cols-4"
       >
-        <motion.div variants={fadeInUp}>
-          <Card>
+        <motion.div variants={fadeInUp} className="h-full">
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>Total contributed</CardTitle>
             </CardHeader>
@@ -114,8 +114,8 @@ export function MemberDashboardScreen() {
           </Card>
         </motion.div>
 
-        <motion.div variants={fadeInUp}>
-          <Card>
+        <motion.div variants={fadeInUp} className="h-full">
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>Active loans</CardTitle>
             </CardHeader>
@@ -127,8 +127,8 @@ export function MemberDashboardScreen() {
           </Card>
         </motion.div>
 
-        <motion.div variants={fadeInUp}>
-          <Card>
+        <motion.div variants={fadeInUp} className="h-full">
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>Total repaid</CardTitle>
             </CardHeader>
@@ -141,8 +141,8 @@ export function MemberDashboardScreen() {
           </Card>
         </motion.div>
 
-        <motion.div variants={fadeInUp}>
-          <Card>
+        <motion.div variants={fadeInUp} className="h-full">
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>Outstanding balance</CardTitle>
             </CardHeader>
@@ -152,10 +152,13 @@ export function MemberDashboardScreen() {
                   to={`/loans/${activeLoan.id}`}
                   className="text-2xl font-semibold text-accent hover:underline"
                 >
-                  <Money amount={activeLoan.outstandingBalance} />
+                  <Money amount={summary?.outstandingBalance ?? 0} />
                 </Link>
               ) : (
-                <p className="text-sm text-text-muted">None</p>
+                <Money
+                  amount={summary?.outstandingBalance ?? 0}
+                  className="text-2xl font-semibold text-text-primary"
+                />
               )}
             </CardContent>
           </Card>
@@ -187,6 +190,15 @@ export function MemberDashboardScreen() {
         ) : (
           <p className="mb-6 text-sm text-text-muted">
             Contributions unlock once your KYC is verified and your account is active.
+            {member && member.kycStatus !== 'VERIFIED' && (
+              <>
+                {' '}
+                <Link to="/profile" className="font-medium text-accent hover:underline">
+                  Verify your KYC
+                </Link>
+                .
+              </>
+            )}
           </p>
         )}
 

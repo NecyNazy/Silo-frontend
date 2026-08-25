@@ -1,3 +1,1 @@
-import { gapHandlers } from './gaps';
-
-export const handlers = [...gapHandlers];
+export const handlers = [];

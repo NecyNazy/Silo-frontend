@@ -11,6 +11,7 @@ import {
   getMemberContributions,
   listAllContributions,
   recordManualContribution,
+  runAutoDebitSweep,
   setupAutoDebit,
   updateAutoDebit,
 } from './api';
@@ -76,6 +77,17 @@ export function useUpdateAutoDebit() {
     mutationFn: (input: UpdateAutoDebitInput) => updateAutoDebit(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contributions', 'auto-debit', memberId] });
+    },
+  });
+}
+
+export function useRunAutoDebitSweep() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => runAutoDebitSweep(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contributions', 'auto-debit'] });
+      queryClient.invalidateQueries({ queryKey: ['contributions', 'all'] });
     },
   });
 }

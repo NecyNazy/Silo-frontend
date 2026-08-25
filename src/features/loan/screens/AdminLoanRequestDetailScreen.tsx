@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useAuthStore } from '@/features/auth/store';
-import { useMember } from '@/features/member/hooks';
+import { useMember, useMembers } from '@/features/member/hooks';
 import {
   Card,
   CardContent,
@@ -22,6 +22,8 @@ export function AdminLoanRequestDetailScreen() {
   const officerId = useAuthStore((s) => s.memberId);
   const { data: request, isLoading, isError, refetch } = useLoanRequest(id);
   const { data: member } = useMember(request?.memberId);
+  const { data: members } = useMembers();
+  const memberNames = new Map(members?.map((m) => [m.id, m.fullName]));
 
   if (isLoading) return <Skeleton className="h-64 w-full" />;
   if (isError || !request) return <ErrorState onRetry={() => refetch()} />;
@@ -44,7 +46,7 @@ export function AdminLoanRequestDetailScreen() {
               Amount: <Money amount={request.amountRequested} className="inline" />
             </p>
             <p>Purpose: {request.purpose}</p>
-            <p>Member: {request.memberId}</p>
+            <p>Member: {member?.fullName ?? request.memberId}</p>
           </CardContent>
         </Card>
 
@@ -77,7 +79,7 @@ export function AdminLoanRequestDetailScreen() {
             <CardTitle>Guarantors</CardTitle>
           </CardHeader>
           <CardContent>
-            <GuarantorList guarantors={request.guarantors} />
+            <GuarantorList guarantors={request.guarantors} memberNames={memberNames} />
           </CardContent>
         </Card>
       </div>

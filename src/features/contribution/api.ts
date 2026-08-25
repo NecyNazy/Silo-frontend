@@ -20,7 +20,6 @@ export async function getContributionSummary(memberId: string): Promise<Contribu
   return data;
 }
 
-/** Gap-fill: the real backend has no "all contributions" endpoint yet. */
 export async function listAllContributions(): Promise<Contribution[]> {
   const { data } = await apiClient.get<Contribution[]>('/contributions');
   return data;
@@ -48,4 +47,13 @@ export async function setupAutoDebit(input: SetupAutoDebitInput): Promise<AutoDe
 export async function updateAutoDebit(input: UpdateAutoDebitInput): Promise<AutoDebitMandate> {
   const { data } = await apiClient.patch<AutoDebitMandate>('/contributions/auto-debit', input);
   return data;
+}
+
+/**
+ * Demo-only: fires the nightly auto-debit cron on demand instead of waiting
+ * for 2am. Backend has flagged this endpoint for removal after the demo —
+ * don't build anything else on top of it.
+ */
+export async function runAutoDebitSweep(): Promise<void> {
+  await apiClient.post('/dev/auto-debit-sweep');
 }

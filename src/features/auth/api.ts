@@ -17,16 +17,16 @@ async function createMember(input: CreateMemberInput): Promise<Member> {
   return data;
 }
 
-async function registerCredentials(memberId: string, password: string): Promise<void> {
-  await apiClient.post('/auth/register', { memberId, password });
+async function registerCredentials(memberId: string, password: string): Promise<SessionTokens> {
+  const { data } = await apiClient.post<SessionTokens>('/auth/register', { memberId, password });
+  return data;
 }
 
-export async function register(input: RegisterMemberInput): Promise<Member> {
+export async function register(input: RegisterMemberInput): Promise<SessionTokens> {
   const member = await createMember({
     fullName: input.fullName,
     email: input.email,
     phoneNumber: input.phoneNumber,
   });
-  await registerCredentials(member.id, input.password);
-  return member;
+  return registerCredentials(member.id, input.password);
 }

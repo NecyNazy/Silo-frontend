@@ -39,18 +39,12 @@ export interface AutoDebitMandate {
 export interface SetupAutoDebitInput {
   amount: number;
   periodicity: AutoDebitPeriodicity;
-  /**
-   * The Paystack transaction reference from a just-completed checkout
-   * (`usePaystackCheckout`'s `onSuccess` callback) — how the backend looks
-   * up the reusable authorization code via Paystack's verify-transaction
-   * call. Confirm this exact field name with backend before shipping; their
-   * locked contract specifies the response shape but not the POST body.
-   */
-  reference: string;
 }
+
+export type AutoDebitAction = 'PAUSE' | 'RESUME' | 'CANCEL';
 
 export interface UpdateAutoDebitInput {
   amount?: number;
   periodicity?: AutoDebitPeriodicity;
-  status?: 'ACTIVE' | 'PAUSED' | 'CANCELLED';
+  action?: AutoDebitAction;
 }

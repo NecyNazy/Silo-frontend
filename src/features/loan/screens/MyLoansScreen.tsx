@@ -77,9 +77,10 @@ export function MyLoansScreen() {
   const { data: invites } = useGuarantorInvites();
 
   const canApply = member?.status === 'ACTIVE' && member?.kycStatus === 'VERIFIED';
+  const isKycBlocked = Boolean(member) && member?.kycStatus !== 'VERIFIED';
   const applyBlockedReason = !member
     ? undefined
-    : member.kycStatus !== 'VERIFIED'
+    : isKycBlocked
       ? 'Your KYC must be verified before you can apply for a loan.'
       : member.status !== 'ACTIVE'
         ? 'Your account must be active before you can apply for a loan.'
@@ -116,13 +117,17 @@ export function MyLoansScreen() {
       {applyBlockedReason && (
         <p className="mb-4 rounded-control bg-warning-muted px-3 py-2 text-sm text-warning">
           {applyBlockedReason}
+          {isKycBlocked && (
+            <>
+              {' '}
+              <Link to="/profile" className="font-medium underline hover:no-underline">
+                Verify your KYC
+              </Link>
+              .
+            </>
+          )}
         </p>
       )}
-      <p className="mb-4 rounded-control bg-warning-muted px-3 py-2 text-xs text-warning">
-        The backend doesn't expose list endpoints for loan requests or loans yet. This table is
-        backed by seed data until that lands, so requests you submit for real won't appear here.
-      </p>
-
       <Tabs defaultValue="loans">
         <TabsList>
           <TabsTrigger value="loans">My loans</TabsTrigger>

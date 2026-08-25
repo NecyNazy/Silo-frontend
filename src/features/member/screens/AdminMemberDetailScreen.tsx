@@ -1,3 +1,4 @@
+import { FileText } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { useAuthStore } from '@/features/auth/store';
 import {
@@ -19,6 +20,7 @@ import {
 import { Skeleton } from '@/shared/components/Skeleton';
 import { formatDate } from '@/shared/lib/date';
 import { getErrorMessage } from '@/shared/lib/error';
+import { isPdf } from '@/shared/lib/file';
 import type { MemberStatus } from '@/shared/types/member';
 import { useMember, useUpdateKycStatus, useUpdateMemberStatus } from '../hooks';
 
@@ -57,12 +59,31 @@ export function AdminMemberDetailScreen() {
               <StatusBadge status={member.kycStatus} />
             </div>
             {member.idDocumentRef ? (
-              <p className="text-sm text-text-muted">
-                ID document on file: {member.idDocumentRef}
-              </p>
+              isPdf(member.idDocumentRef) ? (
+                <a
+                  href={member.idDocumentRef}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-control border border-border-subtle bg-surface-raised px-3 py-2 text-sm font-medium text-accent hover:underline"
+                >
+                  <FileText className="h-4 w-4" aria-hidden="true" />
+                  View ID document (PDF)
+                </a>
+              ) : (
+                <a href={member.idDocumentRef} target="_blank" rel="noreferrer" className="block w-fit">
+                  <img
+                    src={member.idDocumentRef}
+                    alt="Uploaded ID document"
+                    className="max-h-64 rounded-control border border-border-subtle object-cover"
+                  />
+                </a>
+              )
             ) : (
-              <p className="text-sm text-warning">
-                No ID document uploaded yet.
+              <p className="text-sm text-warning">No ID document uploaded yet.</p>
+            )}
+            {member.idType && (
+              <p className="text-sm text-text-muted">
+                Declared ID: {member.idType} {member.idNumber}
               </p>
             )}
             <FormAlert message={kycMutation.isError ? getErrorMessage(kycMutation.error) : null} />
@@ -71,7 +92,7 @@ export function AdminMemberDetailScreen() {
                 size="sm"
                 isLoading={kycMutation.isPending && kycMutation.variables === 'VERIFIED'}
                 onClick={() => kycMutation.mutate('VERIFIED')}
-                disabled={isOwnProfile || member.kycStatus === 'VERIFIED' || kycMutation.isPending}
+                disabled={isOwnProfile || member.kycStatus !== 'PENDING' || kycMutation.isPending}
               >
                 Approve
               </Button>
@@ -80,7 +101,7 @@ export function AdminMemberDetailScreen() {
                 variant="destructive"
                 isLoading={kycMutation.isPending && kycMutation.variables === 'REJECTED'}
                 onClick={() => kycMutation.mutate('REJECTED')}
-                disabled={isOwnProfile || member.kycStatus === 'REJECTED' || kycMutation.isPending}
+                disabled={isOwnProfile || member.kycStatus !== 'PENDING' || kycMutation.isPending}
               >
                 Reject
               </Button>

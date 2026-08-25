@@ -1,7 +1,6 @@
 import { CreditCard, Repeat } from 'lucide-react';
 import { useState } from 'react';
 import { useMyProfile } from '@/features/member/hooks';
-import { usePaystackCheckout } from '@/features/paymentgateway/usePaystackCheckout';
 import {
   Button,
   Card,
@@ -21,33 +20,87 @@ import {
 import { Skeleton } from '@/shared/components/Skeleton';
 import { formatDate } from '@/shared/lib/date';
 import { getErrorMessage } from '@/shared/lib/error';
-import type { AutoDebitPeriodicity } from '@/shared/types/contribution';
-import { useAutoDebitMandate, useSetupAutoDebit, useUpdateAutoDebit } from '../hooks';
+import type { AutoDebitMandate, AutoDebitPeriodicity } from '@/shared/types/contribution';
+import { useAutoDebitMandate, useMemberContributions, useSetupAutoDebit, useUpdateAutoDebit } from '../hooks';
 
 const PERIODICITY_LABEL: Record<AutoDebitPeriodicity, string> = {
   WEEKLY: 'week',
   MONTHLY: 'month',
 };
 
-export function AutoDebitCard() {
-  const { data: member } = useMyProfile();
-  const { data: mandate, isLoading } = useAutoDebitMandate();
-  const { open, status: checkoutStatus, isConfigured } = usePaystackCheckout();
+function AutoDebitSetupForm({ failedMandate }: { failedMandate: AutoDebitMandate | null }) {
   const setupMutation = useSetupAutoDebit();
-  const updateMutation = useUpdateAutoDebit();
-  const [amount, setAmount] = useState('');
-  const [periodicity, setPeriodicity] = useState<AutoDebitPeriodicity>('MONTHLY');
+  const [amount, setAmount] = useState(failedMandate ? String(failedMandate.amount) : '');
+  const [periodicity, setPeriodicity] = useState<AutoDebitPeriodicity>(
+    failedMandate?.periodicity ?? 'MONTHLY',
+  );
 
   function handleSetup() {
     const amountNaira = Number(amount);
-    if (!amountNaira || amountNaira <= 0 || !member) return;
-
-    open({ email: member.email, amountNaira }, (reference) => {
-      setupMutation.mutate({ amount: amountNaira, periodicity, reference });
-    });
+    if (!amountNaira || amountNaira <= 0) return;
+    setupMutation.mutate({ amount: amountNaira, periodicity });
   }
 
-  const needsSetup = !mandate || mandate.status === 'CANCELLED';
+  return (
+    <>
+      <p className="text-sm text-text-muted">
+        Have a set amount pulled from your card automatically, weekly or monthly, instead of
+        contributing by hand each time.
+      </p>
+      {failedMandate && (
+        <p className="text-sm text-danger">
+          The last {failedMandate.consecutiveFailureCount} attempt
+          {failedMandate.consecutiveFailureCount === 1 ? '' : 's'} failed
+          {failedMandate.lastFailureReason ? `: ${failedMandate.lastFailureReason}.` : '.'}
+        </p>
+      )}
+      <FormAlert message={setupMutation.isError ? getErrorMessage(setupMutation.error) : null} />
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="space-y-1.5">
+          <Label htmlFor="auto-debit-amount">Amount (NGN)</Label>
+          <Input
+            id="auto-debit-amount"
+            type="number"
+            min={1}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="w-40"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="auto-debit-period">Every</Label>
+          <Select
+            value={periodicity}
+            onValueChange={(value) => setPeriodicity(value as AutoDebitPeriodicity)}
+          >
+            <SelectTrigger id="auto-debit-period" className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="WEEKLY">Week</SelectItem>
+              <SelectItem value="MONTHLY">Month</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Button onClick={handleSetup} isLoading={setupMutation.isPending}>
+          {failedMandate ? 'Re-set up auto-debit' : 'Set up auto-debit'}
+        </Button>
+      </div>
+    </>
+  );
+}
+
+export function AutoDebitCard() {
+  const { data: member } = useMyProfile();
+  const { data: mandate, isLoading } = useAutoDebitMandate();
+  const { data: contributions, isLoading: contributionsLoading } = useMemberContributions(
+    member?.id,
+  );
+  const updateMutation = useUpdateAutoDebit();
+
+  const needsSetup = !mandate || mandate.status === 'CANCELLED' || mandate.status === 'FAILED';
+  const hasPaystackContribution = contributions?.some((c) => c.source === 'PAYSTACK') ?? false;
+  const loading = isLoading || contributionsLoading;
 
   return (
     <Card>
@@ -56,131 +109,68 @@ export function AutoDebitCard() {
         <CardTitle>Recurring contribution</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {isLoading ? (
+        {loading ? (
           <Skeleton className="h-8 w-40" />
-        ) : !isConfigured ? (
+        ) : !hasPaystackContribution ? (
           <div className="flex items-start gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-warning-muted text-warning">
               <CreditCard className="h-4 w-4" aria-hidden="true" />
             </div>
             <div>
-              <p className="text-sm font-medium text-text-primary">Card payment not set up</p>
+              <p className="text-sm font-medium text-text-primary">No card on file yet</p>
               <p className="mt-0.5 text-sm text-text-muted">
-                Auto-debit needs a card on file. Ask an officer to record contributions manually
-                until card payments are enabled.
+                Make one card contribution above first. Auto-debit reuses that card going forward.
               </p>
             </div>
           </div>
         ) : needsSetup ? (
-          <>
-            <p className="text-sm text-text-muted">
-              Have a set amount pulled from your card automatically, weekly or monthly, instead
-              of contributing by hand each time.
-            </p>
-            <FormAlert
-              message={setupMutation.isError ? getErrorMessage(setupMutation.error) : null}
-            />
-            <div className="flex flex-wrap items-end gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="auto-debit-amount">Amount (NGN)</Label>
-                <Input
-                  id="auto-debit-amount"
-                  type="number"
-                  min={1}
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-40"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="auto-debit-period">Every</Label>
-                <Select
-                  value={periodicity}
-                  onValueChange={(value) => setPeriodicity(value as AutoDebitPeriodicity)}
-                >
-                  <SelectTrigger id="auto-debit-period" className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="WEEKLY">Week</SelectItem>
-                    <SelectItem value="MONTHLY">Month</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button
-                onClick={handleSetup}
-                isLoading={checkoutStatus === 'loading' || setupMutation.isPending}
-              >
-                Set up auto-debit
-              </Button>
-            </div>
-          </>
+          <AutoDebitSetupForm failedMandate={mandate?.status === 'FAILED' ? mandate : null} />
         ) : (
-          <>
-            <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge status={mandate.status} />
-              <span className="text-sm text-text-secondary">
-                ₦{mandate.amount.toLocaleString()} every {PERIODICITY_LABEL[mandate.periodicity]}
-              </span>
-            </div>
-
-            {mandate.status === 'FAILED' ? (
-              <>
-                <p className="text-sm text-danger">
-                  The last {mandate.consecutiveFailureCount} attempt
-                  {mandate.consecutiveFailureCount === 1 ? '' : 's'} failed
-                  {mandate.lastFailureReason ? `: ${mandate.lastFailureReason}.` : '.'} Set it up
-                  again to keep contributing automatically.
-                </p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  isLoading={checkoutStatus === 'loading' || setupMutation.isPending}
-                  onClick={handleSetup}
-                >
-                  Re-set up auto-debit
-                </Button>
-              </>
-            ) : (
-              <>
-                <p className="text-sm text-text-muted">
-                  Next charge {formatDate(mandate.nextChargeDate)}.
-                </p>
-                <FormAlert
-                  message={updateMutation.isError ? getErrorMessage(updateMutation.error) : null}
-                />
-                <div className="flex gap-2">
-                  {mandate.status === 'ACTIVE' ? (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      isLoading={updateMutation.isPending}
-                      onClick={() => updateMutation.mutate({ status: 'PAUSED' })}
-                    >
-                      Pause
-                    </Button>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      isLoading={updateMutation.isPending}
-                      onClick={() => updateMutation.mutate({ status: 'ACTIVE' })}
-                    >
-                      Resume
-                    </Button>
-                  )}
+          mandate && (
+            <>
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusBadge status={mandate.status} />
+                <span className="text-sm text-text-secondary">
+                  ₦{mandate.amount.toLocaleString()} every {PERIODICITY_LABEL[mandate.periodicity]}
+                </span>
+              </div>
+              <p className="text-sm text-text-muted">
+                Next charge {formatDate(mandate.nextChargeDate)}.
+              </p>
+              <FormAlert
+                message={updateMutation.isError ? getErrorMessage(updateMutation.error) : null}
+              />
+              <div className="flex gap-2">
+                {mandate.status === 'ACTIVE' ? (
                   <Button
                     size="sm"
-                    variant="destructive"
+                    variant="outline"
                     isLoading={updateMutation.isPending}
-                    onClick={() => updateMutation.mutate({ status: 'CANCELLED' })}
+                    onClick={() => updateMutation.mutate({ action: 'PAUSE' })}
                   >
-                    Cancel
+                    Pause
                   </Button>
-                </div>
-              </>
-            )}
-          </>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    isLoading={updateMutation.isPending}
+                    onClick={() => updateMutation.mutate({ action: 'RESUME' })}
+                  >
+                    Resume
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  isLoading={updateMutation.isPending}
+                  onClick={() => updateMutation.mutate({ action: 'CANCEL' })}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </>
+          )
         )}
       </CardContent>
     </Card>

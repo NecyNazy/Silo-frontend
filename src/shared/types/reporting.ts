@@ -15,4 +15,5 @@ export interface MemberReportSummary {
   totalContributions: number;
   activeLoans: number;
   totalRepayments: number;
+  outstandingBalance: number;
 }

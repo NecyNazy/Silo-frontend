@@ -1,5 +1,6 @@
 import { Home, LogOut, User, Wallet } from 'lucide-react';
 import { motion } from 'motion/react';
+import type { ReactNode } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks';
 import { NotificationBell, ThemeToggle } from '@/shared/components';
@@ -11,7 +12,7 @@ const NAV_ITEMS = [
   { to: '/profile', label: 'Profile', icon: User },
 ];
 
-export function MemberLayout() {
+export function MemberLayout({ children }: { children?: ReactNode }) {
   const { logout } = useAuth();
 
   return (
@@ -62,9 +63,7 @@ export function MemberLayout() {
       </header>
 
       <main className="flex-1 px-4 pb-24 pt-6 sm:px-6 sm:pb-6">
-        <div className="mx-auto w-full max-w-4xl">
-          <Outlet />
-        </div>
+        <div className="mx-auto w-full max-w-4xl">{children ?? <Outlet />}</div>
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-around border-t border-border-subtle bg-surface/90 py-2 backdrop-blur-lg sm:hidden">

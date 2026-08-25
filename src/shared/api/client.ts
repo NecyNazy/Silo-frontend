@@ -32,15 +32,6 @@ apiClient.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  // Only consumed by the MSW handlers that stand in for endpoints the real
-  // backend doesn't expose yet (see tests/mocks/handlers/gaps.ts).
-  if (import.meta.env.VITE_ENABLE_MOCKS !== 'false') {
-    const memberId = useAuthStore.getState().memberId;
-    if (memberId) {
-      config.headers['x-mock-member-id'] = memberId;
-    }
-  }
-
   return config;
 });
 

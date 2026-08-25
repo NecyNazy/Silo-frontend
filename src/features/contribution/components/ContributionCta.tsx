@@ -8,7 +8,7 @@ import { getMemberContributions } from '../api';
 
 type Phase = 'idle' | 'confirming' | 'confirmed' | 'timeout';
 
-const POLL_INTERVAL_MS = 4000;
+const POLL_INTERVAL_MS = 2000;
 const TIMEOUT_MS = 60_000;
 
 export function ContributionCta({ email }: { email: string }) {
@@ -49,8 +49,15 @@ export function ContributionCta({ email }: { email: string }) {
 
     open({ email, amountNaira }, (reference) => {
       referenceRef.current = reference;
+      setAmount('');
       setPhase('confirming');
     });
+  }
+
+  function reset() {
+    referenceRef.current = null;
+    setAmount('');
+    setPhase('idle');
   }
 
   if (!isConfigured) {
@@ -79,17 +86,25 @@ export function ContributionCta({ email }: { email: string }) {
 
   if (phase === 'confirmed') {
     return (
-      <p className="text-sm font-medium text-success">
-        Contribution confirmed.
-      </p>
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-success">Contribution confirmed.</p>
+        <Button size="sm" variant="outline" onClick={reset}>
+          Make another contribution
+        </Button>
+      </div>
     );
   }
 
   if (phase === 'timeout') {
     return (
-      <p className="text-sm text-text-secondary">
-        We'll notify you once this is confirmed. Check your notifications shortly.
-      </p>
+      <div className="space-y-2">
+        <p className="text-sm text-text-secondary">
+          We'll notify you once this is confirmed. Check your notifications shortly.
+        </p>
+        <Button size="sm" variant="outline" onClick={reset}>
+          Try again
+        </Button>
+      </div>
     );
   }
 

@@ -19,13 +19,11 @@ export interface ListLoanRequestsParams {
   mine?: boolean;
 }
 
-/** Gap-fill: the real backend has no list/detail GET for loan requests yet. */
 export async function listLoanRequests(params: ListLoanRequestsParams): Promise<LoanRequest[]> {
   const { data } = await apiClient.get<LoanRequest[]>('/loan-requests', { params });
   return data;
 }
 
-/** Gap-fill: also the only source of a request's guarantors (no real endpoint lists them). */
 export async function getLoanRequest(id: string): Promise<LoanRequestWithGuarantors> {
   const { data } = await apiClient.get<LoanRequestWithGuarantors>(`/loan-requests/${id}`);
   return data;
@@ -85,7 +83,6 @@ export interface ListLoansParams {
   mine?: boolean;
 }
 
-/** Gap-fill: the real backend has no list GET for loans yet, only get-by-id. */
 export async function listLoans(params: ListLoansParams): Promise<Loan[]> {
   const { data } = await apiClient.get<Loan[]>('/loans', { params });
   return data;

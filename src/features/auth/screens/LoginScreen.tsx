@@ -1,14 +1,9 @@
 import { motion } from 'motion/react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ThemeToggle } from '@/shared/components';
 import { LoginForm } from '../components/LoginForm';
 
 export function LoginScreen() {
-  const location = useLocation();
-  const justRegistered = Boolean(
-    (location.state as { justRegistered?: boolean } | null)?.justRegistered,
-  );
-
   return (
     <div className="relative flex min-h-svh items-center justify-center overflow-hidden bg-canvas px-4">
       <div
@@ -36,16 +31,6 @@ export function LoginScreen() {
         <p className="mt-1 text-sm text-text-muted">
           Manage your contributions, loans, and repayments.
         </p>
-
-        {justRegistered && (
-          <motion.p
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-4 rounded-control bg-success-muted px-3 py-2 text-sm text-success"
-          >
-            Account created. Sign in to continue, your KYC review is pending.
-          </motion.p>
-        )}
 
         <div className="mt-6">
           <LoginForm />

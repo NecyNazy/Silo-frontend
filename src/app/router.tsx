@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthGuard } from '@/features/auth/components/AuthGuard';
 import { RoleGuard } from '@/features/auth/components/RoleGuard';
@@ -47,11 +47,6 @@ const RepayScreen = lazyScreen(
   () => import('@/features/repayment/screens/RepayScreen'),
   'RepayScreen',
 );
-const NotificationsScreen = lazyScreen(
-  () => import('@/features/notification/screens/NotificationsScreen'),
-  'NotificationsScreen',
-);
-
 const OfficerDashboardScreen = lazyScreen(
   () => import('@/features/reporting/screens/OfficerDashboardScreen'),
   'OfficerDashboardScreen',
@@ -63,10 +58,6 @@ const AdminMembersScreen = lazyScreen(
 const AdminMemberDetailScreen = lazyScreen(
   () => import('@/features/member/screens/AdminMemberDetailScreen'),
   'AdminMemberDetailScreen',
-);
-const AdminLoanRequestsScreen = lazyScreen(
-  () => import('@/features/loan/screens/AdminLoanRequestsScreen'),
-  'AdminLoanRequestsScreen',
 );
 const AdminLoanRequestDetailScreen = lazyScreen(
   () => import('@/features/loan/screens/AdminLoanRequestDetailScreen'),
@@ -94,11 +85,27 @@ function RouteFallback() {
 }
 
 function HomeRoute() {
-  const role = useAuthStore((s) => s.role);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   if (!isAuthenticated) return <LandingScreen />;
-  return <Navigate to={role === 'OFFICER' ? '/admin/dashboard' : '/dashboard'} replace />;
+  return <Navigate to="/dashboard" replace />;
+}
+
+/** Wraps a shared, role-agnostic screen in whichever chrome matches the caller's role. */
+function RoleLayout({ children }: { children: ReactNode }) {
+  const role = useAuthStore((s) => s.role);
+  return role === 'OFFICER' ? (
+    <OfficerLayout>{children}</OfficerLayout>
+  ) : (
+    <MemberLayout>{children}</MemberLayout>
+  );
+}
+
+function DashboardRoute() {
+  const role = useAuthStore((s) => s.role);
+  return (
+    <RoleLayout>{role === 'OFFICER' ? <OfficerDashboardScreen /> : <MemberDashboardScreen />}</RoleLayout>
+  );
 }
 
 export function AppRouter() {
@@ -110,16 +117,35 @@ export function AppRouter() {
         <Route path="/register" element={<RegisterScreen />} />
 
         <Route
+          path="/dashboard"
+          element={
+            <AuthGuard>
+              <DashboardRoute />
+            </AuthGuard>
+          }
+        />
+        <Route path="/admin/dashboard" element={<Navigate to="/dashboard" replace />} />
+
+        <Route
+          path="/loans"
+          element={
+            <AuthGuard>
+              <RoleLayout>
+                <MyLoansScreen />
+              </RoleLayout>
+            </AuthGuard>
+          }
+        />
+
+        <Route
           element={
             <AuthGuard>
               <MemberLayout />
             </AuthGuard>
           }
         >
-          <Route path="/dashboard" element={<MemberDashboardScreen />} />
           <Route path="/profile" element={<ProfileScreen />} />
           <Route path="/contributions" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/loans" element={<MyLoansScreen />} />
           <Route path="/loans/apply" element={<Navigate to="/loans" replace />} />
           <Route path="/loans/:id" element={<LoanDetailScreen />} />
           <Route path="/loans/:id/guarantors/add" element={<AddGuarantorScreen />} />
@@ -129,7 +155,6 @@ export function AppRouter() {
             path="/guarantor-liabilities"
             element={<ComingSoonScreen title="Guarantor liabilities" />}
           />
-          <Route path="/notifications" element={<NotificationsScreen />} />
         </Route>
 
         <Route
@@ -139,10 +164,9 @@ export function AppRouter() {
             </RoleGuard>
           }
         >
-          <Route path="/admin/dashboard" element={<OfficerDashboardScreen />} />
           <Route path="/admin/members" element={<AdminMembersScreen />} />
           <Route path="/admin/members/:id" element={<AdminMemberDetailScreen />} />
-          <Route path="/admin/loan-requests" element={<AdminLoanRequestsScreen />} />
+          <Route path="/admin/loan-requests" element={<Navigate to="/admin/loans" replace />} />
           <Route path="/admin/loan-requests/:id" element={<AdminLoanRequestDetailScreen />} />
           <Route path="/admin/loans" element={<AdminLoansScreen />} />
           <Route path="/admin/loans/:id" element={<AdminLoanDetailScreen />} />

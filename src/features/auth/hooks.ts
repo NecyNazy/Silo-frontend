@@ -31,18 +31,20 @@ export function useLogin() {
       setSession(session);
       const params = new URLSearchParams(window.location.search);
       const next = params.get('next');
-      navigate(next ?? (session.role === 'OFFICER' ? '/admin/dashboard' : '/dashboard'));
+      navigate(next ?? '/dashboard');
     },
   });
 }
 
 export function useRegister() {
+  const setSession = useAuthStore((s) => s.setSession);
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: (input: RegisterMemberInput) => register(input),
-    onSuccess: () => {
-      navigate('/login', { state: { justRegistered: true } });
+    onSuccess: (session) => {
+      setSession(session);
+      navigate('/dashboard');
     },
   });
 }

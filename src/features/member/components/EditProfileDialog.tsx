@@ -86,7 +86,12 @@ export function EditProfileDialog({ member }: { member: Member }) {
 
           <div className="space-y-1.5">
             <Label htmlFor="phoneNumber">Phone</Label>
-            <Input id="phoneNumber" className="max-w-sm" {...register('phoneNumber')} />
+            <Input
+              id="phoneNumber"
+              className="max-w-sm"
+              placeholder="08012345678"
+              {...register('phoneNumber')}
+            />
             {errors.phoneNumber && (
               <p role="alert" className="text-xs text-danger">
                 {errors.phoneNumber.message}

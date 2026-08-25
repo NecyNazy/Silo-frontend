@@ -1,20 +1,23 @@
 import type { ColumnDef } from '@tanstack/react-table';
-import { PiggyBank } from 'lucide-react';
+import { PiggyBank, Zap } from 'lucide-react';
 import { useMembers } from '@/features/member/hooks';
 import {
+  Button,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   DataTable,
   ErrorState,
+  FormAlert,
   Money,
   PageHeader,
 } from '@/shared/components';
 import { formatDate } from '@/shared/lib/date';
+import { getErrorMessage } from '@/shared/lib/error';
 import type { Contribution } from '@/shared/types/contribution';
 import { ManualContributionForm } from '../components/ManualContributionForm';
-import { useAllContributions } from '../hooks';
+import { useAllContributions, useRunAutoDebitSweep } from '../hooks';
 
 function useColumns(): ColumnDef<Contribution, unknown>[] {
   const { data: members } = useMembers();
@@ -44,15 +47,11 @@ function useColumns(): ColumnDef<Contribution, unknown>[] {
 export function AdminContributionsScreen() {
   const { data, isLoading, isError, refetch } = useAllContributions();
   const columns = useColumns();
+  const sweepMutation = useRunAutoDebitSweep();
 
   return (
     <div>
       <PageHeader title="Contributions" description="Record manual contributions and browse all." />
-
-      <p className="mb-4 rounded-control bg-warning-muted px-3 py-2 text-xs text-warning">
-        The backend doesn't expose an all-contributions endpoint yet. This table is backed by
-        seed data until that lands.
-      </p>
 
       <Card className="mb-6">
         <CardHeader>
@@ -60,6 +59,34 @@ export function AdminContributionsScreen() {
         </CardHeader>
         <CardContent>
           <ManualContributionForm />
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6 border-warning/30">
+        <CardHeader>
+          <CardTitle>Auto-debit sweep (demo only)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-text-muted">
+            Fires the nightly auto-debit cron on demand instead of waiting for 2am. Temporary
+            endpoint for this demo — will be removed once the real schedule is enough to test
+            against.
+          </p>
+          <FormAlert
+            message={sweepMutation.isError ? getErrorMessage(sweepMutation.error) : null}
+          />
+          {sweepMutation.isSuccess && (
+            <p className="text-sm text-success">Sweep ran. Mandates refreshed below.</p>
+          )}
+          <Button
+            size="sm"
+            variant="outline"
+            isLoading={sweepMutation.isPending}
+            onClick={() => sweepMutation.mutate()}
+          >
+            <Zap className="h-4 w-4" aria-hidden="true" />
+            Run sweep now
+          </Button>
         </CardContent>
       </Card>
 
