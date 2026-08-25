@@ -2,12 +2,9 @@ import { FileText, Sparkles, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Button, Card, CardContent, CardHeader, CardTitle, FormAlert } from '@/shared/components';
 import { getErrorMessage } from '@/shared/lib/error';
+import { isPdf } from '@/shared/lib/file';
 import type { Member } from '@/shared/types/member';
 import { useUpdateMemberProfile, useUploadKycDocument } from '../hooks';
-
-function isPdf(url: string): boolean {
-  return url.toLowerCase().endsWith('.pdf');
-}
 
 export function KycDocumentCard({ member }: { member: Member }) {
   const fileInputRef = useRef<HTMLInputElement>(null);

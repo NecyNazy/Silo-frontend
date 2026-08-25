@@ -45,7 +45,13 @@ export function RegisterForm() {
 
       <div className="space-y-1.5">
         <Label htmlFor="phoneNumber">Phone</Label>
-        <Input id="phoneNumber" type="tel" autoComplete="tel" {...registerField('phoneNumber')} />
+        <Input
+          id="phoneNumber"
+          type="tel"
+          autoComplete="tel"
+          placeholder="08012345678"
+          {...registerField('phoneNumber')}
+        />
         {errors.phoneNumber && (
           <p role="alert" className="text-xs text-danger">
             {errors.phoneNumber.message}

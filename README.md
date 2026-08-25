@@ -23,13 +23,6 @@ requests are proxied by Vite's dev server to `VITE_BACKEND_ORIGIN`
 (`vite.config.ts`) rather than requiring the backend to send CORS headers,
 since it currently doesn't.
 
-**No backend handy?** Click "Demo member" or "Demo officer" on the login
-screen (dev builds only). Those sign in against seed data with no server
-required, backed by `tests/mocks/handlers/demo.ts`, so you can browse every
-screen in both roles. Every demo handler is conditional. It only serves seed
-accounts and falls through to the real backend for everything else, so this
-never interferes with a real backend when one is running.
-
 A handful of officer list/detail screens also run against endpoints the real
 backend doesn't expose yet: no GET for member list, loan-request list/detail,
 or loan list. [MSW](https://mswjs.io) fills in just those
@@ -57,10 +50,9 @@ exactly what's real vs. mocked today, and for production deployment
 
 See §5 of the architecture doc. Feature folders under `src/features/*`
 mirror the backend's module boundaries, with shared UI/api/lib code under
-`src/shared/`. MSW's `tests/mocks/` fills the backend's genuine gaps
-(§14 of the architecture doc has the full list) and backs the dev-only demo
-accounts described above, it's not a full mock backend; Playwright specs are
-in `tests/e2e/`.
+`src/shared/`. MSW's `tests/mocks/` only fills the backend's genuine gaps
+(§14 of the architecture doc has the full list), not a full mock backend;
+Playwright specs are in `tests/e2e/`.
 
 ## Docs
 

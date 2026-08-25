@@ -58,11 +58,6 @@ export function AdminMembersScreen() {
     <div>
       <PageHeader title="Members" description="Member directory and KYC review queue." />
 
-      <p className="mb-4 rounded-control bg-warning-muted px-3 py-2 text-xs text-warning">
-        The backend doesn't expose a member list endpoint yet. This table is backed by seed data
-        until that lands.
-      </p>
-
       <div className="mb-4 flex gap-2">
         {KYC_FILTERS.map((filter) => (
           <FilterPill

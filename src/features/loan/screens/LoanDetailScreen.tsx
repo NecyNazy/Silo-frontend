@@ -1,4 +1,6 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
+import { useAuthStore } from '@/features/auth/store';
+import { useMember } from '@/features/member/hooks';
 import {
   Button,
   Card,
@@ -11,20 +13,28 @@ import {
   StatusBadge,
 } from '@/shared/components';
 import { Skeleton } from '@/shared/components/Skeleton';
-import type { LoanDetail } from '@/shared/types/loan';
+import type { LoanDetail, RiskTier } from '@/shared/types/loan';
 import { GuarantorList } from '../components/GuarantorList';
 import { InstallmentSchedule } from '../components/InstallmentSchedule';
 import { useLoanOrRequest, useLoanRequest } from '../hooks';
 
 export function LoanDetailScreen() {
   const { id } = useParams<{ id: string }>();
+  const currentMemberId = useAuthStore((s) => s.memberId);
+  const location = useLocation();
+  const borrowerRiskTier = (location.state as { borrowerRiskTier?: RiskTier } | null)
+    ?.borrowerRiskTier;
   const result = useLoanOrRequest(id);
+  const requesterId = result.kind === 'request' ? result.request.memberId : undefined;
+  const { data: requester } = useMember(requesterId);
 
   if (result.isLoading) return <Skeleton className="h-64 w-full" />;
   if (result.isError || !result.kind) return <ErrorState message="Loan not found." />;
 
   if (result.kind === 'request') {
     const { request } = result;
+    const isOwnRequest = request.memberId === currentMemberId;
+
     return (
       <div>
         <PageHeader
@@ -43,10 +53,25 @@ export function LoanDetailScreen() {
               />
             </CardContent>
           </Card>
+          {!isOwnRequest && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Requester</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-1.5 text-sm text-text-secondary">
+                <p>{requester?.fullName ?? request.memberId}</p>
+                {borrowerRiskTier && (
+                  <p className="flex items-center gap-2">
+                    Risk tier <StatusBadge status={borrowerRiskTier} />
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
           <Card>
             <CardHeader className="flex-row items-center justify-between">
               <CardTitle>Guarantors</CardTitle>
-              {request.status === 'PENDING' && (
+              {request.status === 'PENDING' && isOwnRequest && (
                 <Button asChild size="sm" variant="outline">
                   <Link to={`/loans/${request.id}/guarantors/add`}>Add guarantor</Link>
                 </Button>

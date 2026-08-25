@@ -1,5 +1,6 @@
 import { ShieldCheck } from 'lucide-react';
 import { motion } from 'motion/react';
+import { Link } from 'react-router-dom';
 import { Button, Card, CardContent, EmptyState, Money, StatusBadge } from '@/shared/components';
 import { Skeleton } from '@/shared/components/Skeleton';
 import { fadeInUp, staggerChildren } from '@/shared/lib/motion';
@@ -28,7 +29,13 @@ export function GuarantorInvitesList() {
           <Card>
             <CardContent className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="font-medium text-text-primary">{invite.purpose}</p>
+                <Link
+                  to={`/loans/${invite.loanRequestId}`}
+                  state={{ borrowerRiskTier: invite.borrowerRiskTier }}
+                  className="font-medium text-text-primary hover:text-accent hover:underline"
+                >
+                  {invite.purpose}
+                </Link>
                 <p className="text-sm text-text-muted">
                   Requesting <Money amount={invite.amountRequested} className="inline" />
                 </p>

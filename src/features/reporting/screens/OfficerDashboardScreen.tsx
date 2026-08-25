@@ -1,18 +1,31 @@
 import { motion } from 'motion/react';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle, ErrorState, Money, PageHeader } from '@/shared/components';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  ErrorState,
+  Money,
+  PageHeader,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/shared/components';
 import { CardSkeleton } from '@/shared/components/Skeleton';
 import { fadeInUp, staggerChildren } from '@/shared/lib/motion';
 import { useDashboardMetrics } from '../hooks';
+import { MemberDashboardScreen } from './MemberDashboardScreen';
 
 const DONUT_COLORS = ['var(--color-accent)', 'var(--color-danger)'];
 
-export function OfficerDashboardScreen() {
+function OrganizationDashboard() {
   const { data: metrics, isLoading, isError, refetch } = useDashboardMetrics();
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <CardSkeleton key={i} />
         ))}
@@ -29,16 +42,14 @@ export function OfficerDashboardScreen() {
 
   return (
     <div>
-      <PageHeader title="Dashboard" description="Live org metrics, refreshed every 15 seconds." />
-
       <motion.div
         initial="hidden"
         animate="show"
         variants={staggerChildren(0.08)}
-        className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+        className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4"
       >
-        <motion.div variants={fadeInUp}>
-          <Card>
+        <motion.div variants={fadeInUp} className="h-full">
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>Active loans</CardTitle>
             </CardHeader>
@@ -47,8 +58,8 @@ export function OfficerDashboardScreen() {
             </CardContent>
           </Card>
         </motion.div>
-        <motion.div variants={fadeInUp}>
-          <Card>
+        <motion.div variants={fadeInUp} className="h-full">
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>Total contributions</CardTitle>
             </CardHeader>
@@ -57,8 +68,8 @@ export function OfficerDashboardScreen() {
             </CardContent>
           </Card>
         </motion.div>
-        <motion.div variants={fadeInUp}>
-          <Card>
+        <motion.div variants={fadeInUp} className="h-full">
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>Outstanding balance</CardTitle>
             </CardHeader>
@@ -67,8 +78,8 @@ export function OfficerDashboardScreen() {
             </CardContent>
           </Card>
         </motion.div>
-        <motion.div variants={fadeInUp}>
-          <Card>
+        <motion.div variants={fadeInUp} className="h-full">
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>Default rate</CardTitle>
             </CardHeader>
@@ -102,6 +113,30 @@ export function OfficerDashboardScreen() {
           </CardContent>
         </Card>
       </motion.div>
+    </div>
+  );
+}
+
+export function OfficerDashboardScreen() {
+  return (
+    <div>
+      <PageHeader
+        title="Dashboard"
+        description="Switch between the org-wide view and your own member activity."
+      />
+
+      <Tabs defaultValue="organization">
+        <TabsList className="mb-6">
+          <TabsTrigger value="organization">Organization</TabsTrigger>
+          <TabsTrigger value="individual">My dashboard</TabsTrigger>
+        </TabsList>
+        <TabsContent value="organization">
+          <OrganizationDashboard />
+        </TabsContent>
+        <TabsContent value="individual">
+          <MemberDashboardScreen />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

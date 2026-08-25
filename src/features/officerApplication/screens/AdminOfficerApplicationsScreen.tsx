@@ -1,5 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { UserCog } from 'lucide-react';
+import { useMembers } from '@/features/member/hooks';
 import { Button, DataTable, ErrorState, PageHeader, StatusBadge } from '@/shared/components';
 import { formatDate } from '@/shared/lib/date';
 import type { OfficerApplication } from '@/shared/types/officerApplication';
@@ -11,11 +12,18 @@ import {
 
 export function AdminOfficerApplicationsScreen() {
   const { data, isLoading, isError, refetch } = usePendingOfficerApplications();
+  const { data: members } = useMembers();
   const approveMutation = useApproveOfficerApplication();
   const rejectMutation = useRejectOfficerApplication();
 
+  const memberNames = new Map(members?.map((m) => [m.id, m.fullName]));
+
   const columns: ColumnDef<OfficerApplication, unknown>[] = [
-    { accessorKey: 'memberId', header: 'Member' },
+    {
+      id: 'member',
+      header: 'Member',
+      accessorFn: (row) => memberNames.get(row.memberId) ?? row.memberId,
+    },
     {
       accessorKey: 'approvalCount',
       header: 'Approvals so far',

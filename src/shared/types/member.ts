@@ -45,7 +45,13 @@ export interface RegisterMemberInput {
 }
 
 export interface KycDocumentExtraction {
-  idType: IdType | null;
+  /**
+   * The backend's OCR returns free text here, not constrained to ID_TYPES
+   * (confirmed via their OpenAPI spec: `ExtractedKycFields.idType` is a
+   * plain string). Only treat it as one of ID_TYPES if it actually matches
+   * before using it to pre-select the ID type dropdown.
+   */
+  idType: string | null;
   idNumber: string | null;
   confidence: number;
 }
